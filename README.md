@@ -68,15 +68,15 @@ proj/Science_Maurano_Humbert_et_al/data/all_fdr0.05_hot.tgz. Samples derived fro
 Gene expression analysis
 ------------------------
 
+###Human Protein Atlas
+
 FPKM gene expression (GE) values measured for 20,344 Ensembl gene identifiers in 44 human cell lines and 32 primary tissues by the Human Protein Atlas (Uhlén et al., 2015) was downloaded from http://www.proteinatlas.org/download/rna.csv.zip. Genes with 3 or more non-zero expression values were retained (n=19,378 genes). The GE data set is provided with one decimal precision for the FPKM values. Thus, a zero GE value (0.0) indicates expression in the interval [0, 0.05) Unless otherwise noted, we set the minimum GE value to 0.04 FPKM before log2-transformation..
 
-Fast Fourier transformation (FFT) and smoothing of trajectories
----------------------------------------------------------------
+###Fast Fourier transformation (FFT) and smoothing of trajectories
 
 We use parameters to smooth (3 bp Daniell smoother; moving average giving half weight to the end values) and de-trend the data (i.e. subtract the mean of the series and remove a linear trend). A recursive time series filter implemented in R was used to remove high frequency variation from trajectories. 24 filter frequencies (1/seq(5,100,4)) were used, and the first 24 values of the trajectory were taken as init values. The 24-value shift in the resulting trajectories was corrected by repeating the last 24 values of the trajectory.
 
-FFT intensity correlation with expression
------------------------------------------
+###FFT intensity correlation with expression
 
 L-WPS was used to calculate periodograms of genomic regions using Fast Fourier Transform (FFT, spec.pgram in R) with frequencies between 1/500 and 1/100 bases. Intensity values for the 120-280 bp frequency range were determined from smooth FFT periodograms. S-shaped Pearson correlation between GE values and FFT intensities was observed around the major inter-nucleosome distance peak, along with a pronounced negative correlation in the 193-199 bp frequency range. The mean intensity in this frequency range was correlated with the average intensity with log2-transformed GE values for downstream analysis. 
 
@@ -98,4 +98,5 @@ mkdir -p body/fft_summaries/
 ./convert_files.py -a transcriptAnno-GRCh37.75.body.tsv -t /tmp/ -r  -p body -i $SAMPLE
 rm -fR /tmp/body/$SAMPLE/fft
 
+R --vanilla --quiet < plots.R
 ```
