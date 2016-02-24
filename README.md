@@ -7,7 +7,7 @@ Snyder MW, Kircher M, Hill AJ, Daza RM, Shendure J. Cell-free DNA Comprises
 an In Vivo Nucleosome Footprint that Informs Its Tissues-Of-Origin. Cell. 2016 Jan 
 14;164(1-2):57-68. doi: 10.1016/j.cell.2015.11.050. PubMed PMID: [26771485](http://www.ncbi.nlm.nih.gov/pubmed/26771485)
 
-*All scripts and binaries are provided as is, without any warrenty and for use at your own risk. This is not the release of a software package. We are only providing this information and code in addition to a description of methods for making it easier to reproduce are analyses. We are* _not_ *providing any support for these scripts.* 
+*All scripts and binaries are provided as is, without any warrenty and for use at your own risk. This is not the release of a software package. We are only providing this information and code in addition to a description of methods for making it easier to reproduce are analyses. We are __not__ providing any support for these scripts.* 
 
 Primary data processing of sequencing data
 ------------------------------------------
@@ -20,18 +20,22 @@ Simulated reads and nucleotide frequencies
 Aligned sequencing data was simulated (SR if shorter than 45 bp, PE 45 bp otherwise) for all major chromosomes of the human reference (GRC37h). Dinucleotide frequencies were determined from real data on both fragment ends and both strand orientations (`referenceKMers.py`), and for the reference genome on both strands (`BAM2FragKMers.py`). The insert size distribution of the real data was extracted for the 1-500 bp range (`BAM_RG_Length.py --noRG`). Reads were simulated procedurally (implemented in `simulate_reads.py`): at each step (i.e., at least once at each genomic coordinate, depending on desired coverage), (1) the strand is randomly chosen, (2) the ratio of the dinucleotide frequency in the real data to that in the reference sequence is used to randomly decide whether the initiating dinucleotide is considered, (3) an length is sampled from the insert size distribution, and (4) the frequency ratio of the terminal dinucleotide is used to randomly decide whether the generated alignment is reported. The simulated coverage was matched to that of the original data after PCR duplicate removal (by adjusting how often sequences are sampled at each position).
 
 ```bash
-
+# Extract kmers (here 2mers) from reference genome 
 ./referenceKMers.py -k 2 -r '' -o grch37_regChroms_2mers.tsv
 
+# Extact the length distribution from the sample BAM, keep only the 1-500bp range 
 ./BAM_RG_Length.py --noRG -p tmp_outfile BAMFILE.bam
 head -n 501 tmp_outfile_ > ${SAMPLE}_lenDist.tsv
 
+# Extract kmers (here 2mers) of left and right read ends from the SAMPLE file
 ./BAM2FragKMers.py --kmerLE=2 --kmerRE=2 -v -r 'ALL' BAMFILE.bam --outfileLE=${SAMPLE}_left_2mer --outfileRE=${SAMPLE}_right_2mer
 
+# Run simulation for each "regular" chromosome (1..22, X, Y) -- should be run in parallel
 for i in $(head -n 24 grch37_1000g_phase2/whole_genome.fa.fai | awk '{ print $1":1-"$2 }'); do \
-  echo ./simulate_fasta_sampling.py -v -d ${SAMPLE}_lenDist.tsv --fwdKMerGenome=grch37_regChroms_2mers.tsv --revKMerGenome=grch37_regChroms_2mers.tsv --fwdPKMers=${SAMPLE}_left_2mer_f.tsv --fwdMKMers=${SAMPLE}_left_2mer_r.tsv --revPKMers=${SAMPLE}_right_2mer_f.tsv --revMKMers=${SAMPLE}_right_2mer_r.tsv -s 20  -r \'"$i"\' -o ${SAMPLE}_2mer_sim_chr$( echo $i | cut -f 1 -d':').bam; \
+  ./simulate_fasta_sampling.py -v -d ${SAMPLE}_lenDist.tsv --fwdKMerGenome=grch37_regChroms_2mers.tsv --revKMerGenome=grch37_regChroms_2mers.tsv --fwdPKMers=${SAMPLE}_left_2mer_f.tsv --fwdMKMers=${SAMPLE}_left_2mer_r.tsv --revPKMers=${SAMPLE}_right_2mer_f.tsv --revMKMers=${SAMPLE}_right_2mer_r.tsv -s 20  -r \'"$i"\' -o ${SAMPLE}_2mer_sim_chr$( echo $i | cut -f 1 -d':').bam; \
 done
 
+# Combine chromosome files, index and regenerate some stats
 ./samtools merge -u ${SAMPLE}_chr*.bam | ./samtools sort - ${SAMPLE}_allChrom
 ./samtools index ${SAMPLE}_allChrom.bam
 ./samtools flagstat ${SAMPLE}_allChrom.bam > ${SAMPLE}_allChrom.bam_stats
@@ -48,28 +52,38 @@ Fragments with inferred lengths of exactly 167 bp were filtered within samples t
 Coverage, fragment endpoints, and windowed protection scores
 ------------------------------------------------------------
 
-Fragment endpoint coordinates were extracted from BAM files with the SAMtools API. Both outer alignment coordinates of PE data were extracted for properly paired reads. Both end coordinates of SR alignments were extracted when PE data was collapsed to SR data by adapter trimming. A fragment’s coverage is defined as all positions between the two (inferred) fragment ends, inclusive of endpoints. We define the Windowed Protection Score (WPS) of a window of size k as the number of molecules spanning the window minus those with an endpoint within the window. We assign the determined WPS to the center of the window. For 35-80 bp fragments (short fraction, S-WPS), k=16; for 120-180 bp fragments (long fraction, L-WPS), k=120.
+Fragment endpoint coordinates were extracted from BAM files with the SAMtools API. Both outer alignment coordinates of PE data were extracted for properly paired reads. Both end coordinates of SR alignments were extracted when PE data was collapsed to SR data by adapter trimming. A fragment’s coverage is defined as all positions between the two (inferred) fragment ends, inclusive of endpoints. We define the Windowed Protection Score (WPS) of a window of size k as the number of molecules spanning the window minus those with an endpoint within the window. We assign the determined WPS to the center of the window. For 35-80 bp fragments (short fraction, S-WPS), k=16; for 120-180 bp fragments (long fraction, L-WPS), k=120. We store coverage, read starts and WPS in gzip-compressed WIG files. We used wigToBigWig from the UCSC tools (http://hgdownload.cse.ucsc.edu/admin/exe/) for converting these to BigWig (bw) for visualization in genome viewers.
 
-Short fraction:
+Running the extraction of coverage, read starts and WPS for the short fraction:
 ```bash
-./samtools view -u -m 120 -M 180 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 120 -c COVERAGE.wig -n WPS.wig -s STARTS.wig
+./samtools view -u -m 120 -M 180 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 120 -c COVERAGE.wig.gz -n WPS.wig.gz -s STARTS.wig.gz
 ```
 
-Long fraction:
+Running the extraction of coverage, read starts and WPS for the long fraction:
 ```bash
-./samtools view -u -m 35 -M 80 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 16 -c COVERAGE.wig -n WPS.wig -s STARTS.wig
+./samtools view -u -m 35 -M 80 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 16 -c COVERAGE.wig.gz -n WPS.wig.gz -s STARTS.wig.gz
 ```
 
 Nucleosome peak calling
 -----------------------
 
-L-WPS is locally adjusted to a running median of zero in 1 kb windows and smoothed using a Savitzky-Golay filter (Savitzky and Golay, 1964) (window size 21, 2nd order polynomial). The L-WPS track is then segmented into above-zero regions (allowing up to 5 consecutive positions below zero). If the resulting region is 50-150 bp, we identify the median L-WPS value of that region and search for the maximum-sum contiguous window above the median. We report the start, end and center coordinates of this window as the “peak,” or local maximum of nucleosome protection. All calculations involving distances between peaks are based on these center coordinates. A score for each peak is determined as the distance between maximum value in the window and the average of the two adjacent L-WPS minima neighboring the region. If the identified region is 150-450 bp, we apply the same above median contiguous window approach, but only report those windows that are 50-150 bp. For score calculation of multiple windows derived from 150-450 bp regions, we set the neighboring minima to zero. We discard regions <50 bp or >450 bp.
+For nuclesome peak calling, the L-WPS is locally adjusted to a running median of zero in 1 kb windows and smoothed using a Savitzky-Golay filter (Savitzky and Golay, 1964) (window size 21, 2nd order polynomial). The L-WPS track is then segmented into above-zero regions (allowing up to 5 consecutive positions below zero). If the resulting region is 50-150 bp, we identify the median L-WPS value of that region and search for the maximum-sum contiguous window above the median. We report the start, end and center coordinates of this window as the “peak,” or local maximum of nucleosome protection. All calculations involving distances between peaks are based on these center coordinates. A score for each peak is determined as the distance between maximum value in the window and the average of the two adjacent L-WPS minima neighboring the region. If the identified region is 150-450 bp, we apply the same above median contiguous window approach, but only report those windows that are 50-150 bp. For score calculation of multiple windows derived from 150-450 bp regions, we set the neighboring minima to zero. We discard regions <50 bp or >450 bp.
+
+Peak calling is implemented in `callPeaks.py` and expects WIG on STDIN:
+
+```bash
+# Note that EXTREGION should be larger than REGION (by at most the maximum read length, i.e. 180) to prevent skipping alignments
+./samtools view -u -m 120 -M 180 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 120 -c OFF -s OFF | ./callPeaks.py -s > calls.bed
+
+# or from bigWig and save as block-gzip compressed (http://www.htslib.org/doc/tabix.html) BED file:
+
+bigWigToWig -chrom=chr1 -start=12000000 -end=13000000 ${SAMPLE}.bw /dev/stdout | ./callPeaks.py -s | bgzip -c >  calls.bed.gz
+```
 
 Analysis of TFBSs and genomic features
 --------------------------------------
 
-We started with clustered FIMO (motif-based) intervals (Grant et al., 2011; Maurano et al., 2012) defining a set of computationally predicted TFBSs. For a subset of clustered TFs (AP-2-2, AP-2, CTCF_Core-2, E2F-2, EBF1, Ebox-CACCTG, Ebox, ESR1, ETS, MAFK, MEF2A-2, MEF2A, MYC-MAX, PAX5-2, RUNX2, RUNX-AML, STAF-2, TCF-LEF, YY1), we retained only predicted TFBSs that overlap with ENCODE ChIP-seq peaks (TfbsClusteredV3 set downloaded from http://hgdownload.cse.ucsc.edu/
-goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/).
+We started with clustered FIMO (motif-based) intervals (Grant et al., 2011; Maurano et al., 2012, http://www.uwencode.org/proj/Maurano_et_al_func_var/) defining a set of computationally predicted TFBSs (`hg19.taipale.1e-4.starch`). For a subset of clustered TFs (AP-2-2, AP-2, CTCF_Core-2, E2F-2, EBF1, Ebox-CACCTG, Ebox, ESR1, ETS, MAFK, MEF2A-2, MEF2A, MYC-MAX, PAX5-2, RUNX2, RUNX-AML, STAF-2, TCF-LEF, YY1), we retained only predicted TFBSs that overlap with ENCODE ChIP-seq peaks (TfbsClusteredV3 set downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/).
 
 WPS values for CH01 and the corresponding simulation were extracted for each position in a 5 kb window around the start coordinate of each TFBS, and was aggregated within each TF cluster. The mean WPS of the first and last 500 bp (which is predominantly flat and represents a mean offset) of the 5 kb window was subtracted from the original WPS at each position. For L-WPS only, a sliding window mean is calculated using a 200 bp window and subtracted from the original signal. Finally, the corrected WPS profile for the simulation is subtracted from the corrected WPS profile for CH01 to correct for signal that is a product of fragment length and ligation bias. This final profile is plotted and termed the Adjusted WPS. In figures, CTCF binding sites are shifted such that the zero coordinate on the x-axis is the center of its 52 bp binding footprint (Ong and Corces, 2014). Genomic coordinates of transcription start sites, transcription end sites, start codons, and splice donor and acceptor sites were obtained from Ensembl Build version 75. Adjusted WPS surrounding these features was calculated as for TFBSs.
 
