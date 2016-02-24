@@ -1,0 +1,77 @@
+Category	Name	Type	Description	RName
+Skin	A-431	Skin cancer (Squamous cells)	Epidermoid carcinoma cell line	A.431
+Lung	A549	Lung carcinoma	Lung carcinoma cell line	A549
+Primary Tissue	adipose_tissue	adipose_tissue	Primary tissue	adipose_tissue
+Primary Tissue	adrenal_gland	adrenal_gland	Primary tissue	adrenal_gland
+Breast/Female Reproductive	AN3-CA	Uterine cancer	Metastatic endometrial adenocarcinoma cell line	AN3.CA
+Primary Tissue	appendix	appendix	Primary tissue	appendix
+Other	BEWO	Uterine cancer	Metastatic choriocarcinoma cell line	BEWO
+Primary Tissue	bone_marrow	bone_marrow	Primary tissue	bone_marrow
+Abdominal	CACO-2	Colon adenocarcinoma	Colon adenocarcinoma cell line	CACO.2
+Abdominal	CAPAN-2	Pancreas adenocarcinoma	Pancreas adenocarcinoma cell line	CAPAN.2
+Primary Tissue	cerebral_cortex	cerebral_cortex	Primary tissue	cerebral_cortex
+Primary Tissue	colon	colon	Primary tissue	colon
+Lymphoid	Daudi	Human Burkitt lymphoma	Human Burkitt lymphoma cell line	Daudi
+Primary Tissue	duodenum	duodenum	Primary tissue	duodenum
+Breast/Female Reproductive	EFO-21	Ovarian cancer	Metastatic ovarian serous cystadenocarcinoma cell line	EFO.21
+Primary Tissue	endometrium	endometrium	Primary tissue	endometrium
+Primary Tissue	esophagus	esophagus	Primary tissue	esophagus
+Primary Tissue	fallopian_tube	fallopian_tube	Primary tissue	fallopian_tube
+Primary Tissue	gallbladder	gallbladder	Primary tissue	gallbladder
+Skin	HaCaT	Keratinocyte cell line	Keratinocyte cell line	HaCaT
+Lymphoid	HDLM-2	Hodgkin lymphoma	Hodgkin lymphoma cell line	HDLM.2
+Primary Tissue	heart_muscle	heart_muscle	Primary tissue	heart_muscle
+Other	HEK_293	Kidney adrenal precursor cell line	Embryonal kidney cell line, transformed by adenovirus type 5	HEK_293
+Myeloid	HEL	Erythroleukemia	Erythroleukemia cell line (AML M6 in relapse after treatment for Hodgkin's disease)	HEL
+Breast/Female Reproductive	HeLa	Cervical cancer	Cervical epithelial adenocarcinoma cell line	HeLa
+Abdominal	Hep_G2	Hepatocellular carcinoma	Hepatocellular carcinoma cell line	Hep_G2
+Myeloid	HL-60	Promyelocytic leukemia	Acute promyelocytic leukemia (APL) cell line	HL.60
+Myeloid	HMC-1	Mastcell leukemia	Mastcell leukemia cell line	HMC.1
+Lymphoid	K-562	Leukemia	Chronic myeloid leukemia (CML) cell line	K.562
+Lymphoid	Karpas-707	Multiple myeloma	Multiple myeloma cell line	Karpas.707
+Primary Tissue	kidney	kidney	Primary tissue	kidney
+Primary Tissue	liver	liver	Primary tissue	liver
+Primary Tissue	lung	lung	Primary tissue	lung
+Primary Tissue	lymph_node	lymph_node	Primary tissue	lymph_node
+Breast/Female Reproductive	MCF7	Breast cancer	Metastatic breast adenocarcinoma cell line	MCF7
+Lymphoid	MOLT-4	Leukemia (ALL)	Acute lymphoblastic leukemia (T-ALL) cell line	MOLT.4
+Myeloid	NB-4	Promyelocytic leukemia	Acute promyelocytic leukemia (APL) cell line	NB.4
+Urinary/Male Reproductive	NTERA-2	Urinary cancer	Metastatic embryonal carcinoma cell line, cloned from TERA-2	NTERA.2
+Primary Tissue	ovary	ovary	Primary tissue	ovary
+Primary Tissue	pancreas	pancreas	Primary tissue	pancreas
+Urinary/Male Reproductive	PC-3	Prostate cancer	Metastatic poorly differentiated prostate adenocarcinoma cell line	PC.3
+Primary Tissue	placenta	placenta	Primary tissue	placenta
+Primary Tissue	prostate	prostate	Primary tissue	prostate
+Primary Tissue	rectum	rectum	Primary tissue	rectum
+Lymphoid	REH	Leukemia (ALL)	Pre-B cell leukemia cell line (ALL, first relapse)	REH
+Sarcoma	RH-30	Rhabdomyosarcoma	Metastatic rhabdomyosarcoma cell line	RH.30
+Lymphoid	RPMI-8226	Multiple Myeloma	Multiple myeloma cell line	RPMI.8226
+Urinary/Male Reproductive	RT4	Bladder cancer	Urinary bladder transitional cell carcinoma cell line	RT4
+Primary Tissue	salivary_gland	salivary_gland	Primary tissue	salivary_gland
+Lung	SCLC-21H	Small cell lung carcinoma	Small cell lung carcinoma cell line	SCLC.21H
+Brain	SH-SY5Y	Neuroblastoma	Metastatic neuroblastoma, clonal subline of neuroepithelioma cell line SK-N-SH	SH.SY5Y
+Breast/Female Reproductive	SiHa	Cervical cancer	Cervical squamous cell carcinoma cell line, integrated 1-2 copies of HPV16	SiHa
+Breast/Female Reproductive	SK-BR-3	Breast cancer	Metastatic breast adenocarcinoma cell line	SK.BR.3
+Primary Tissue	skeletal_muscle	skeletal_muscle	Primary tissue	skeletal_muscle
+Primary Tissue	skin	skin	Primary tissue	skin
+Skin	SK-MEL-30	Melanoma	Metastatic malignant melanoma cell line	SK.MEL.30
+Primary Tissue	small_intestine	small_intestine	Primary tissue	small_intestine
+Primary Tissue	smooth_muscle	smooth_muscle	Primary tissue	smooth_muscle
+Primary Tissue	spleen	spleen	Primary tissue	spleen
+Primary Tissue	stomach	stomach	Primary tissue	stomach
+Primary Tissue	testis	testis	Primary tissue	testis
+Myeloid	THP-1	Monocytic leukemia	Acute monocytic leukemia (AML) cell line	THP.1
+Primary Tissue	thyroid_gland	thyroid_gland	Primary tissue	thyroid_gland
+Other	TIME	Microvascular endothelial cell line	Telomerase-immortalized human microvascular endothelial cells (pooled)	TIME
+Primary Tissue	tonsil	tonsil	Primary tissue	tonsil
+Brain	U-138_MG	Glioblastoma	Glioblastoma cell line	U.138_MG
+Sarcoma	U-2_OS	Osteosarcoma	Osteosarcoma cell line	U.2_OS
+Sarcoma	U-2197	Sarcoma	Malignant fibrous histiocytoma cell line	U.2197
+Brain	U-251_MG	Glioblastoma	Glioblastoma cell line	U.251_MG
+Lymphoid	U-266/70	Multiple Myeloma	Multiple myeloma cell line (1970, IL-6-dependent)	U.266.70
+Lymphoid	U-266/84	Multiple Myeloma	Multiple myeloma cell line (1984, in vitro differentiated)	U.266.84
+Lymphoid	U-698	B-cell lymphoma	B-cell lymphoma cell line (lymphoblastic lymphosarcoma)	U.698
+Brain	U-87_MG	Glioblastoma, astrocytoma	Glioblastoma, astrocytoma cell line	U.87_MG
+Myeloid	U-937	Myelomonocytic histiocytic lymphoma	Myelomonocytic histiocytic lymphoma cell line	U.937
+Primary Tissue	urinary_bladder	urinary_bladder	Primary tissue	urinary_bladder
+Skin	WM-115	Melanoma	Malignant melanoma cell line	WM.115
