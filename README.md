@@ -17,9 +17,28 @@ Barcoded paired-end (PE) sequencing data was split allowing up to one substituti
 Simulated reads and nucleotide frequencies
 ------------------------------------------
 
-Aligned sequencing data was simulated (SR if shorter than 45 bp, PE 45 bp otherwise) for all major chromosomes of the human reference (GRC37h). Dinucleotide frequencies were determined from real data on both fragment ends and both strand orientations, and for the reference genome on both strands. The insert size distribution of the real data was extracted for the 1-500 bp range. Reads were simulated procedurally: at each step (i.e., at least once at each genomic coordinate, depending on desired coverage), (1) the strand is randomly chosen, (2) the ratio of the dinucleotide frequency in the real data to that in the reference sequence is used to randomly decide whether the initiating dinucleotide is considered, (3) an length is sampled from the insert size distribution, and (4) the frequency ratio of the terminal dinucleotide is used to randomly decide whether the generated alignment is reported. The simulated coverage was matched to that of the original data after PCR duplicate removal.
+Aligned sequencing data was simulated (SR if shorter than 45 bp, PE 45 bp otherwise) for all major chromosomes of the human reference (GRC37h). Dinucleotide frequencies were determined from real data on both fragment ends and both strand orientations (`referenceKMers.py`), and for the reference genome on both strands (`BAM2FragKMers.py`). The insert size distribution of the real data was extracted for the 1-500 bp range (`BAM_RG_Length.py --noRG`). Reads were simulated procedurally (implemented in `simulate_reads.py`): at each step (i.e., at least once at each genomic coordinate, depending on desired coverage), (1) the strand is randomly chosen, (2) the ratio of the dinucleotide frequency in the real data to that in the reference sequence is used to randomly decide whether the initiating dinucleotide is considered, (3) an length is sampled from the insert size distribution, and (4) the frequency ratio of the terminal dinucleotide is used to randomly decide whether the generated alignment is reported. The simulated coverage was matched to that of the original data after PCR duplicate removal (by adjusting how often sequences are sampled at each position).
 
+```bash
 
+./referenceKMers.py -k 2 -r '' -o grch37_regChroms_2mers.tsv
+
+./BAM_RG_Length.py --noRG -p tmp_outfile BAMFILE.bam
+head -n 501 tmp_outfile_ > ${SAMPLE}_lenDist.tsv
+
+./BAM2FragKMers.py --kmerLE=2 --kmerRE=2 -v -r 'ALL' BAMFILE.bam --outfileLE=${SAMPLE}_left_2mer --outfileRE=${SAMPLE}_right_2mer
+
+for i in $(head -n 24 grch37_1000g_phase2/whole_genome.fa.fai | awk '{ print $1":1-"$2 }'); do \
+  echo ./simulate_fasta_sampling.py -v -d ${SAMPLE}_lenDist.tsv --fwdKMerGenome=grch37_regChroms_2mers.tsv --revKMerGenome=grch37_regChroms_2mers.tsv --fwdPKMers=${SAMPLE}_left_2mer_f.tsv --fwdMKMers=${SAMPLE}_left_2mer_r.tsv --revPKMers=${SAMPLE}_right_2mer_f.tsv --revMKMers=${SAMPLE}_right_2mer_r.tsv -s 20  -r \'"$i"\' -o ${SAMPLE}_2mer_sim_chr$( echo $i | cut -f 1 -d':').bam; \
+done
+
+./samtools merge -u ${SAMPLE}_chr*.bam | ./samtools sort - ${SAMPLE}_allChrom
+./samtools index ${SAMPLE}_allChrom.bam
+./samtools flagstat ${SAMPLE}_allChrom.bam > ${SAMPLE}_allChrom.bam_stats
+./samtools view -F _2 ${SAMPLE}_allChrom.bam | cut -f 3 | uniq -c > ${SAMPLE}_allChrom.byChromCounts.txt
+./BAM2FragmentationPatterns.py -r ALL -o ${SAMPLE}_allChrom.fragpatterns.txt ${SAMPLE}_allChrom.bam
+./BAM_RG_Length.py --noRG -p ${SAMPLE}_allChrom.length ${SAMPLE}_allChrom.bam
+```
 
 Analysis of nucleotide composition of 167 bp fragments
 ------------------------------------------------------
