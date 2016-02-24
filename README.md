@@ -5,9 +5,9 @@ The following sections provide details for the analyses performed in:
 
 Snyder MW, Kircher M, Hill AJ, Daza RM, Shendure J. Cell-free DNA Comprises 
 an In Vivo Nucleosome Footprint that Informs Its Tissues-Of-Origin. Cell. 2016 Jan 
-14;164(1-2):57-68. doi: 10.1016/j.cell.2015.11.050. PubMed PMID: 26771485
+14;164(1-2):57-68. doi: 10.1016/j.cell.2015.11.050. PubMed PMID: [26771485](http://www.ncbi.nlm.nih.gov/pubmed/26771485)
 
-*All scripts and binaries are provided as is, without any warrenty and for use at your own risk. This is not the release of a software package. We are only providing this information and code in addition to a description of methods for making it easier to reproduce are analyses. We are _not_ providing any support for these scripts.* 
+*All scripts and binaries are provided as is, without any warrenty and for use at your own risk. This is not the release of a software package. We are only providing this information and code in addition to a description of methods for making it easier to reproduce are analyses. We are* _not_ *providing any support for these scripts.* 
 
 Primary data processing of sequencing data
 ------------------------------------------
@@ -19,6 +19,8 @@ Simulated reads and nucleotide frequencies
 
 Aligned sequencing data was simulated (SR if shorter than 45 bp, PE 45 bp otherwise) for all major chromosomes of the human reference (GRC37h). Dinucleotide frequencies were determined from real data on both fragment ends and both strand orientations, and for the reference genome on both strands. The insert size distribution of the real data was extracted for the 1-500 bp range. Reads were simulated procedurally: at each step (i.e., at least once at each genomic coordinate, depending on desired coverage), (1) the strand is randomly chosen, (2) the ratio of the dinucleotide frequency in the real data to that in the reference sequence is used to randomly decide whether the initiating dinucleotide is considered, (3) an length is sampled from the insert size distribution, and (4) the frequency ratio of the terminal dinucleotide is used to randomly decide whether the generated alignment is reported. The simulated coverage was matched to that of the original data after PCR duplicate removal.
 
+
+
 Analysis of nucleotide composition of 167 bp fragments
 ------------------------------------------------------
 
@@ -28,6 +30,16 @@ Coverage, fragment endpoints, and windowed protection scores
 ------------------------------------------------------------
 
 Fragment endpoint coordinates were extracted from BAM files with the SAMtools API. Both outer alignment coordinates of PE data were extracted for properly paired reads. Both end coordinates of SR alignments were extracted when PE data was collapsed to SR data by adapter trimming. A fragment’s coverage is defined as all positions between the two (inferred) fragment ends, inclusive of endpoints. We define the Windowed Protection Score (WPS) of a window of size k as the number of molecules spanning the window minus those with an endpoint within the window. We assign the determined WPS to the center of the window. For 35-80 bp fragments (short fraction, S-WPS), k=16; for 120-180 bp fragments (long fraction, L-WPS), k=120.
+
+Short fraction:
+```bash
+./samtools view -u -m 120 -M 180 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 120 -c COVERAGE.wig -n WPS.wig -s STARTS.wig
+```
+
+Long fraction:
+```bash
+./samtools view -u -m 35 -M 80 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 16 -c COVERAGE.wig -n WPS.wig -s STARTS.wig
+```
 
 Nucleosome peak calling
 -----------------------
@@ -66,5 +78,24 @@ We use parameters to smooth (3 bp Daniell smoother; moving average giving half w
 FFT intensity correlation with expression
 -----------------------------------------
 
-L-WPS was used to calculate periodograms of genomic regions using Fast Fourier Transform (FFT, spec.pgram in R) with frequencies between 1/500 and 1/100 bases. See Supplementary Experimental Procedures for details. Intensity values for the 120-280 bp frequency range were determined from smooth FFT periodograms. S-shaped Pearson correlation between GE values and FFT intensities was observed around the major inter-nucleosome distance peak, along with a pronounced negative correlation in the 193-199 bp frequency range. The mean intensity in this frequency range was correlated with the average intensity with log2-transformed GE values for downstream analysis. 
+L-WPS was used to calculate periodograms of genomic regions using Fast Fourier Transform (FFT, spec.pgram in R) with frequencies between 1/500 and 1/100 bases. Intensity values for the 120-280 bp frequency range were determined from smooth FFT periodograms. S-shaped Pearson correlation between GE values and FFT intensities was observed around the major inter-nucleosome distance peak, along with a pronounced negative correlation in the 193-199 bp frequency range. The mean intensity in this frequency range was correlated with the average intensity with log2-transformed GE values for downstream analysis. 
 
+```bash
+
+zcat transcriptAnno-GRCh37.75.tsv.gz | awk 'BEGIN{ FS="\t"; OFS="\t" }{ if ($5 == "+") { print $1,$2,$3-10000,$3,$5 } else { print $1,$2,$4,$4+10000,$5 } }' > transcriptAnno-GRCh37.75.upstream.tsv                                                   
+zcat transcriptAnno-GRCh37.75.tsv.gz | awk 'BEGIN{ FS="\t"; OFS="\t" }{ if ($5 == "+") { print $1,$2,$4,$4+10000,$5 } else { print $1,$2,$3-10000,$3,$5 } }' > transcriptAnno-GRCh37.75.downstream.tsv                                                 
+zcat transcriptAnno-GRCh37.75.tsv.gz | awk 'BEGIN{ FS="\t"; OFS="\t" }{ if ($5 == "+") { print $1,$2,$3-1,$3-1+10000,$5 } else { print $1,$2,$4-1-10000,$4-1,$5 } }' > transcriptAnno-GRCh37.75.body.tsv
+
+# Extract counts
+mkdir -p body/$SAMPLE
+./extractReadStartsFromBAM_Region_WPS.py --minInsert=120 --maxInsert=180 -i transcriptAnno-GRCh37.75.body.tsv -o 'body/$SAMPLE/block_%s.tsv.gz' BAMFILE.bam
+
+# Run FFT & convert to summary tbl
+
+mkdir -p /tmp/body/$SAMPLE/fft
+( cd body/$SAMPLE/counts; ls block_*.tsv.gz ) | xargs -n 500 Rscript fft_path.R body/$SAMPLE/counts /tmp/body/$SAMPLE/fft
+mkdir -p body/fft_summaries/
+./convert_files.py -a transcriptAnno-GRCh37.75.body.tsv -t /tmp/ -r  -p body -i $SAMPLE
+rm -fR /tmp/body/$SAMPLE/fft
+
+```
