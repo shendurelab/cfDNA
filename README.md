@@ -77,20 +77,20 @@ Peak calling is implemented in `callPeaks.py` and expects WIG on STDIN:
 
 # or from bigWig and save as block-gzip compressed (http://www.htslib.org/doc/tabix.html) BED file:
 
-bigWigToWig -chrom=chr1 -start=12000000 -end=13000000 ${SAMPLE}.bw /dev/stdout | ./callPeaks.py -s | bgzip -c >  calls.bed.gz
+bigWigToWig -chrom=chr1 -start=12000000 -end=13000000 ${SAMPLE}.bw /dev/stdout | ./callPeaks.py -s | bgzip -c > calls.bed.gz
 ```
 
 Analysis of TFBSs and genomic features
 --------------------------------------
 
-We started with clustered FIMO (motif-based) intervals (Grant et al., 2011; Maurano et al., 2012, http://www.uwencode.org/proj/Maurano_et_al_func_var/) defining a set of computationally predicted TFBSs (`hg19.taipale.1e-4.starch`). For a subset of clustered TFs (AP-2-2, AP-2, CTCF_Core-2, E2F-2, EBF1, Ebox-CACCTG, Ebox, ESR1, ETS, MAFK, MEF2A-2, MEF2A, MYC-MAX, PAX5-2, RUNX2, RUNX-AML, STAF-2, TCF-LEF, YY1), we retained only predicted TFBSs that overlap with ENCODE ChIP-seq peaks (TfbsClusteredV3 set downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/).
+We started with clustered FIMO (motif-based) intervals (Grant et al., 2011; Maurano et al., 2012, http://www.uwencode.org/proj/Maurano_et_al_func_var/) defining a set of computationally predicted TFBSs (`hg19.taipale.1e-4.starch`). For a subset of clustered TFs (AP-2-2, AP-2, CTCF_Core-2, E2F-2, EBF1, Ebox-CACCTG, Ebox, ESR1, ETS, MAFK, MEF2A-2, MEF2A, MYC-MAX, PAX5-2, RUNX2, RUNX-AML, STAF-2, TCF-LEF, YY1), we retained only predicted TFBSs that overlap with ENCODE ChIP-seq peaks (TfbsClusteredV3 set downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/). Details on download and basic processing of these data sets are available in `data/Maurano_et_al_func_var/README` and `data/ENCODE_TfbsClusteredV3/README`.
 
 WPS values for CH01 and the corresponding simulation were extracted for each position in a 5 kb window around the start coordinate of each TFBS, and was aggregated within each TF cluster. The mean WPS of the first and last 500 bp (which is predominantly flat and represents a mean offset) of the 5 kb window was subtracted from the original WPS at each position. For L-WPS only, a sliding window mean is calculated using a 200 bp window and subtracted from the original signal. Finally, the corrected WPS profile for the simulation is subtracted from the corrected WPS profile for CH01 to correct for signal that is a product of fragment length and ligation bias. This final profile is plotted and termed the Adjusted WPS. In figures, CTCF binding sites are shifted such that the zero coordinate on the x-axis is the center of its 52 bp binding footprint (Ong and Corces, 2014). Genomic coordinates of transcription start sites, transcription end sites, start codons, and splice donor and acceptor sites were obtained from Ensembl Build version 75. Adjusted WPS surrounding these features was calculated as for TFBSs.
 
 Analysis of CTCF sites
 ----------------------
 
-CTCF sites first included clustered FIMO binding site predictions (described above). This set was intersected with ENCODE ChIP-seq peaks (TfbsClusteredV3, described above), and then further intersected with a set of CTCF binding sites experimentally observed to be active across 19 tissues (Wang et al., 2012), to produce three increasingly stringent sets. For each CTCF site, distances between each of 20 flanking nucleosomes  (10 upstream and 10 downstream) were calculated. The mean S-WPS and L-WPS at each position relative to the center of the CTCF binding motif were also calculated within bins defined by spacing between -1 and +1 nucleosomes (>160 bp, 161-200 bp, 201-230 bp, 231-270 bp, 271-420 bp, 421-460 bp, and >460 bp). 
+CTCF sites first included clustered FIMO binding site predictions (described above). This set was intersected with ENCODE ChIP-seq peaks (TfbsClusteredV3, described above), and then further intersected with a set of CTCF binding sites experimentally observed to be active across 19 tissues (Wang et al., 2012; details on the download of this data set are available in `data/Wang_et_al_CTCF/README`), to produce three increasingly stringent sets. For each CTCF site, distances between each of 20 flanking nucleosomes  (10 upstream and 10 downstream) were calculated. The mean S-WPS and L-WPS at each position relative to the center of the CTCF binding motif were also calculated within bins defined by spacing between -1 and +1 nucleosomes (>160 bp, 161-200 bp, 201-230 bp, 231-270 bp, 271-420 bp, 421-460 bp, and >460 bp). 
 
 Analysis of DHS sites
 ---------------------

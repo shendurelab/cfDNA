@@ -1,0 +1,22 @@
+http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/
+
+chrom 	chr1	varchar(255) 	Reference sequence chromosome or scaffold
+chromStart 	10089	int(10) unsigned 	Start position in chromosome
+chromEnd 	10309	int(10) unsigned 	End position in chromosome
+name 	ZBTB33	varchar(255) 	Name of item
+score 	175	int(10) unsigned 	Score from 0-1000
+strand 	.	char(1) 	+ or -
+thickStart 	10089	int(10) unsigned 	Start of where display should be thick (start codon)
+thickEnd 	10309	int(10) unsigned 	End of where display should be thick (stop codon)
+reserved 	0	int(10) unsigned 	Used as itemRgb as of 2004-11-22
+blockCount 	1	int(10) unsigned 	Number of blocks
+blockSizes 	220	longblob 	Comma separated list of block sizes
+chromStarts 	0	longblob 	Start positions relative to chromStart
+expCount 	95	int(10) unsigned 	Number of experiment values
+expIds 	0,1,2,3,4,5,6,7,8,9,10,11,1...	longblob 	Comma separated list of experiment IDs
+expScores 	0,0,0,175,0,0,0,0,164,0,0,0...	longblob 	Comma separated list of experiment scores
+
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/wgEncodeRegTfbsClusteredV3.bed.gz
+
+zcat wgEncodeRegTfbsClusteredV3.bed.gz | sed s/'^chr'/''/g | sort -k1,1 -k2,2n | bgzip -c > tfbs.v3.tsv.gz
+tabix -s 1 -b 2 -e 3 tfbs.v3.tsv.gz

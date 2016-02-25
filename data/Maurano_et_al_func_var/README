@@ -1,0 +1,23 @@
+# http://www.uwencode.org/proj/Maurano_et_al_func_var/
+
+wget http://www.uwencode.org/proj/Maurano_et_al_func_var/fimo/hg19.taipale.1e-4.starch
+wget http://www.uwencode.org/proj/Maurano_et_al_func_var/pwm.gene.mapping.V3.withclusters.txt
+
+# use unstarch from bedops and bgzip/tabix from the tabix package
+unstarch hg19.taipale.1e-4.starch | bgzip -c > hg19.taipale.bed.gz
+tabix -p bed hg19.taipale.bed.gz
+
+zcat hg19.taipale.bed.gz | ./UnifyMotifs.py | bgzip -c > hg19.taipale.recluster.bed.gz
+zcat hg19.taipale.bed.gz | ./UnifyMotifsGeneName.py | bgzip -c > hg19.taipale.GeneCluster.bed.gz
+
+zcat hg19.taipale.recluster.bed.gz | sort -k1,1 -k2,2n -k3,3n | bgzip -c > hg19.taipale.recluster.resort.bed.gz
+zcat hg19.taipale.GeneCluster.bed.gz | sort -k1,1 -k2,2n -k3,3n | bgzip -c > hg19.taipale.GeneCluster.resort.bed.gz
+
+mv hg19.taipale.recluster.resort.bed.gz hg19.taipale.recluster.bed.gz
+mv hg19.taipale.GeneCluster.resort.bed.gz hg19.taipale.GeneCluster.bed.gz
+
+tabix -p bed hg19.taipale.recluster.bed.gz
+tabix -p bed hg19.taipale.GeneCluster.bed.gz
+
+zcat hg19.taipale.bed.gz | cut -f 1,2,3,6,7 | sort | uniq | cut -f 4,5 | sort | uniq -c | awk 'BEGIN{ OFS="\t" }{ print $3,$2,$1 }' | bgzip -c > hg19.taipale.sites.tsv.gz
+

@@ -1,0 +1,36 @@
+wget http://genome.cshlp.org/content/suppl/2012/08/28/22.9.1680.DC1/Table_S2_Location_of_ChIP-seq_binding_positions_in_19_cell_lines.txt
+
+tail -n +2 Table_S2_Location_of_ChIP-seq_binding_positions_in_19_cell_lines.txt | awk '{ print $3-$2 }' | uniq -c
+  77811 134
+
+head -n 1 Table_S2_Location_of_ChIP-seq_binding_positions_in_19_cell_lines.txt | xargs -n1 | nl | head -n 25
+     1  chrom
+     2  chromStart
+     3  chromEnd
+     4  ID
+     5  strand
+     6  MCV#
+     7  AG09309_pk
+     8  AG09319_pk
+     9  AG10803_pk
+    10  AoAF_pk
+    11  BJ_pk
+    12  Caco-2_pk
+    13  GM06990_pk
+    14  HBMEC_pk
+    15  HEEpiC_pk
+    16  Hela-S3_pk
+    17  HepG2_pk
+    18  HMF_pk
+    19  HPAF_pk
+    20  HPF_pk
+    21  HRE_pk
+    22  K562_pk
+    23  SAEC_pk
+    24  SK-N-SH_RA_pk
+    25  WERI-Rb-1_pk
+
+tail -n +2 Table_S2_Location_of_ChIP-seq_binding_positions_in_19_cell_lines.txt | awk '{ if ($6 == 19) { print $1":"($2-($3-$2)/2":"$5 )} }' | wc -l 
+27662
+
+tail -n +2 ~/nucleosomes/transcription_factors/tissue-specifc_CTCF/v1/Table_S2_Location_of_ChIP-seq_binding_positions_in_19_cell_lines.txt | awk 'BEGIN{ OFS="\t"; FS="\t" }{ if ($6 == 19) print $1,$2,$3 }' | sed s/'chr'//g | sort -k1,1 -k2,2n > 19CellLineCTCF.bed
