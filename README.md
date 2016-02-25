@@ -75,7 +75,7 @@ Peak calling is implemented in `callPeaks.py` and expects WIG on STDIN:
 # Note that EXTREGION should be larger than REGION (by at most the maximum read length, i.e. 180) to prevent skipping alignments
 ./samtools view -u -m 120 -M 180 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 120 -c OFF -s OFF | ./callPeaks.py -s > calls.bed
 
-# or from bigWig and save as block-gzip compressed (http://www.htslib.org/doc/tabix.html) BED file:
+# or from bigWig (http://hgdownload.cse.ucsc.edu/admin/exe/) and save as block-gzip compressed (http://www.htslib.org/doc/tabix.html) BED file:
 
 bigWigToWig -chrom=chr1 -start=12000000 -end=13000000 ${SAMPLE}.bw /dev/stdout | ./callPeaks.py -s | bgzip -c > calls.bed.gz
 ```

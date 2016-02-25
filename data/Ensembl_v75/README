@@ -1,0 +1,10 @@
+wget ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz
+
+./filterTranscripts.py | bgzip -c > Homo_sapiens.GRCh37.75.OneTranscriptPerGene.tsv.gz
+
+./extractExonSpliceAcceptor.py > exonSpliceAcceptor.coords 
+./extractExonSpliceDonor.py > exonSpliceDonor.coords 
+./extractTSS.py > TSS.coords 
+./extractTSE.py > TSE.coords 
+./extractStartCodon.py > StartCodon.coords 
+./extractStopCodon.py > StopCodon.coords 
