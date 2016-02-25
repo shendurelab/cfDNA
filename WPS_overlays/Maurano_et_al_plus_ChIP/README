@@ -1,0 +1,127 @@
+##########################
+
+- Names of Maurano clusters:
+
+CTCF -> CTCF_Core/2
+AP-2s -> AP-2 AP-2/2
+E2F-2 -> E2F/2
+EBF1 -> EBF1
+EBOX -> Ebox Ebox/CACCTG
+ESR1 -> ESR1
+ETS -> ETS
+FOXG1 -> FOXG1
+GM397-2 -> GM397/2
+IRF* -> IRF IRF/2 IRF/3
+IRX2-2 -> IRX2/2
+MAFK -> MAFK
+MEF2A -> MEF2A MEF2A/2
+MYC/MAX -> MYC/MAX
+PAX5 -> PAX5/2
+RHOX11 -> RHOX11
+RUNX* -> RUNX2 RUNX/AML
+SCRT1-2 -> SCRT1/2
+SPDEF -> SPDEF [not SPDEF/3]
+STAF-2 -> STAF/2
+TCFCP2L1 (no strong nucleosome signal) -> TCFCP2L1
+TCF-LEF -> TCF/LEF
+TP53 -> TP53 TP53/2
+YY1 -> YY1
+
+Matching names in ENCODE TF ChipSeq data:
+
+CTCF -> CTCF_Core/2 -> CTCF
+AP-2s -> AP-2 AP-2/2 -> TFAP2A,TFAP2C
+E2F-2 -> E2F/2 -> E2F1,E2F4
+EBF1 -> EBF1 -> EBF1
+EBOX -> Ebox Ebox/CACCTG -> TCF3,TAL1 TCF3
+ESR1 -> ESR1 -> ESR1
+ETS -> ETS -> ETS1 ELF1 ELK1 ELK4 STAT1 STAT2 STAT3 GABPA SPI1
+IRF* -> IRF IRF/2 IRF/3 -> IRF1,STAT1,PRDM1 IRF3 IRF3
+MAFK -> MAFK -> MAFK
+MEF2A -> MEF2A MEF2A/2 -> MEF2A
+MYC/MAX -> MYC/MAX -> MYC,MAX,USF1,USF2,SREBP1
+PAX5 -> PAX5/2 -> PAX5
+RUNX* -> RUNX2 RUNX/AML -> RUNX3
+STAF-2 -> STAF/2 -> ZNF143
+TCF-LEF -> TCF/LEF -> TCF7L2,TCF3
+YY1 -> YY1 -> YY1
+
+No assignment (i.e. excluded):
+
+FOXG1 -> FOXG1 -> - 
+GM397-2 -> GM397/2 -> -
+IRX2-2 -> IRX2/2 -> -
+RHOX11 -> RHOX11 -> -
+SCRT1-2 -> SCRT1/2 -> -
+SPDEF -> SPDEF SPDEF/3 -> -
+TCFCP2L1 (no strong nucleosome signal) -> TCFCP2L1 -> -
+TP53 -> TP53 TP53/2 -> -
+
+################################
+
+cd sites 
+
+./extractMauranoSites.py
+
+ls -1 *.sites | xargs -n 1 -P 5 bgzip
+ls -1 *.sites.gz | xargs -n 1 -P 5 tabix -s 1 -b 2 -e 3
+
+./extractChIPpeaks.py
+
+for i in *.sites.gz; do tabix -B $i ${i/sites.gz/peaks} | bgzip -c > ../${i/sites.gz/PO.gz}; done 
+
+cd ..
+
+################################
+
+ls -1 *.PO.gz
+AP-2-2.PO.gz
+AP-2.PO.gz
+CTCF_Core-2.PO.gz
+E2F-2.PO.gz
+EBF1.PO.gz
+Ebox-CACCTG.PO.gz
+Ebox.PO.gz
+ESR1.PO.gz
+ETS.PO.gz
+IRF-2.PO.gz
+IRF-3.PO.gz
+IRF.PO.gz
+MAFK.PO.gz
+MEF2A-2.PO.gz
+MEF2A.PO.gz
+MYC-MAX.PO.gz
+PAX5-2.PO.gz
+RUNX2.PO.gz
+RUNX-AML.PO.gz
+STAF-2.PO.gz
+TCF-LEF.PO.gz
+YY1.PO.gz
+
+mkdir short
+mkdir long
+
+vim extractFactor_short.sh
+#-------------------
+#!/bin/bash
+zcat ${1}.PO.gz | ../extractSignal.py -t offset -o short/${2}_ -n ${1} -i normedWPS/normedWPS_short_${2}.tsv.gz 
+#-------------------
+chmod +x extractFactor_short.sh
+
+vim extractFactor_long.sh
+#-------------------
+#!/bin/bash
+zcat ${1}.PO.gz | ../extractSignal.py -t offset -o long/${2}_ -n ${1} -i normedWPS/normedWPS_long_${2}.tsv.gz 
+#-------------------
+chmod +x extractFactor_long.sh
+  
+for sample in CH01 CH01_2mer_sim CA01 CA01_2mer_sim; do for i in *.PO.gz; do echo ./extractFactor_short.sh ${i/.PO.gz} $sample; echo ./extractFactor_long.sh ${i/.PO.gz} $sample; done; done > cmds.lst
+
+mkdir plots
+
+for sample in CH01 CH01_2mer_sim CA01 CA01_2mer_sim; do for i in $(ls -1 short/CH01_*.tsv | xargs -n 1 basename | sed s/"CH01_"/''/g | sed s/'.tsv'/''/g ); do Rscript ../plot.R $sample $i; done; done
+
+for i in $(ls -1 short/CH01_2mer_sim_*.tsv | xargs -n 1 basename | sed s/"CH01_2mer_sim_"/''/g | sed s/'.tsv'/''/g ); do \
+  Rscript ../plot_subtract.R CH01 CH01_2mer_sim $i; \
+  Rscript ../plot_subtract.R CA01 CA01_2mer_sim $i; \
+done

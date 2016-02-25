@@ -1,0 +1,41 @@
+mkdir short
+mkdir long
+
+# Use the following annotations:
+data/Ensembl_v75/exonSpliceAcceptor.coords
+data/Ensembl_v75/exonSpliceDonor.coords
+data/Ensembl_v75/StartCodon.coords
+data/Ensembl_v75/StopCodon.coords
+data/Ensembl_v75/TSE.coords
+data/Ensembl_v75/TSS.coords
+
+vim extractFactor_short.sh
+#-------------------
+#!/bin/bash
+cat ${1} | ../extractSignal.py -t sites -o short/${2}_ -n $( basename ${1} | sed s/.coords//g ) -i /net/shendure/vol1/home/mkircher/nucleosomes/peakFinder/wiggleTracks/newCalls/normedWPS/normedWPS_short_${2}.tsv.gz 
+#-------------------
+chmod +x extractFactor_short.sh
+
+vim extractFactor_long.sh
+#-------------------
+#!/bin/bash
+cat ${1} | ../extractSignal.py -t sites -o long/${2}_ -n $( basename ${1} | sed s/.coords//g ) -i /net/shendure/vol1/home/mkircher/nucleosomes/peakFinder/wiggleTracks/newCalls/normedWPS/normedWPS_long_${2}.tsv.gz 
+#-------------------
+chmod +x extractFactor_long.sh
+
+for sample in CH01 CH01_2mer_sim; do for i in  data/Ensembl_v75/*.coords; do echo ./extractFactor_short.sh $i $sample; echo ./extractFactor_long.sh $i $sample; done; done > cmds.lst
+
+mkdir plots
+
+for sample in CH01; do for i in $(ls -1 short/CH01_*.tsv | xargs -n 1 basename | sed s/"CH01_"/''/g | sed s/'.tsv'/''/g ); do \
+  Rscript ../plot.R $sample $i; done; \
+done
+
+for i in $(ls -1 short/CH01_*.tsv | xargs -n 1 basename | sed s/"CH01_"/''/g | sed s/'.tsv'/''/g ); do \
+  Rscript ../plot_subtract.R CH01 CH01_2mer_sim $i; \
+done
+
+Rscript plot_panel_long.R CH01 CH01_2mer_sim 
+
+Rscript plot_panel_long_PDF.R CH01 CH01_2mer_sim
+

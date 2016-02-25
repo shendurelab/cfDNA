@@ -1,0 +1,29 @@
+tail -n +2 data/Wang_et_al_CTCF/Table_S2_Location_of_ChIP-seq_binding_positions_in_19_cell_lines.txt | awk 'BEGIN{ OFS="\t"; FS="\t" }{ if ($6 == 19) print $1,$2,$3 }' | sed s/'chr'//g | sort -k1,1 -k2,2n > 19CellLineCTCF.bed
+
+ln -s ../Maurano_et_al_plus_ChIP/sites/CTCF_Core-2.sites.gz
+ln -s ../Maurano_et_al_plus_ChIP/sites/CTCF_Core-2.sites.gz.tbi
+
+tabix -B CTCF_Core-2.sites.gz 19CellLineCTCF.bed |  bgzip -c > CTCF_Core-2.PO.gz
+
+zcat CTCF_Core-2.PO.gz | wc -l
+23723
+
+ln -s ../Maurano_et_al_plus_ChIP/extractFactor_long.sh 
+ln -s ../Maurano_et_al_plus_ChIP/extractFactor_short.sh
+
+mkdir short
+mkdir long
+
+for sample in BH01 BH01_2mer_sim IH01 IH01_2mer_sim IH02 IH02_2mer_sim CH01 CH01_2mer_sim CA01 CA01_2mer_sim; do for i in *.PO.gz; do echo ./extractFactor_short.sh ${i/.PO.gz} $sample; echo ./extractFactor_long.sh ${i/.PO.gz} $sample; done; done > cmds.lst
+
+mkdir plots
+
+for sample in BH01 BH01_2mer_sim IH01 IH01_2mer_sim IH02 IH02_2mer_sim CH01 CH01_2mer_sim CA01 CA01_2mer_sim; do for i in $(ls -1 short/allNormal_2mer_sim_*.tsv | xargs -n 1 basename | sed s/"allNormal_2mer_sim_"/''/g | sed s/'.tsv'/''/g ); do Rscript ../plot.R $sample $i; done; done
+
+for i in $(ls -1 short/BH01_2mer_sim_*.tsv | xargs -n 1 basename | sed s/"BH01_2mer_sim_"/''/g | sed s/'.tsv'/''/g ); do \
+  Rscript ../plot_subtract.R BH01 BH01_2mer_sim $i; \
+  Rscript ../plot_subtract.R IH01 IH01_2mer_sim $i; \
+  Rscript ../plot_subtract.R IH02 IH02_2mer_sim $i; \
+  Rscript ../plot_subtract.R CH01 CH01_2mer_sim $i; \
+  Rscript ../plot_subtract.R CA01 CA01_2mer_sim $i; \
+done

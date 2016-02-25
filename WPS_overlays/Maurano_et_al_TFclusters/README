@@ -1,0 +1,30 @@
+mkdir short
+mkdir long
+
+vim extractFactor_short.sh
+#-------------------
+#!/bin/bash
+zcat data/Maurano_et_al_func_var/hg19.taipale.recluster.bed.gz | awk 'BEGIN{ FS="\t" }{ if ($4 == "'${1}'") print }END{ print "#END" }' | ../extractSignal.py -t offset -o short/${2}_ -n ${1} -i normedWPS/normedWPS_short_${2}.tsv.gz 
+#-------------------
+chmod +x extractFactor_short.sh
+
+vim extractFactor_long.sh
+#-------------------
+#!/bin/bash
+zcat data/Maurano_et_al_func_var/hg19.taipale.recluster.bed.gz | awk 'BEGIN{ FS="\t" }{ if ($4 == "'${1}'") print }END{ print "#END" }' | ../extractSignal.py -t offset -o long/${2}_ -n ${1} -i normedWPS/normedWPS_long_${2}.tsv.gz 
+#-------------------
+chmod +x extractFactor_long.sh
+
+for sample in BH01 BH01_2mer_sim IH01 IH01_2mer_sim IH02 IH02_2mer_sim CH01 CH01_2mer_sim CA01 CA01_2mer_sim; do for i in $( awk '{ print $2 }' data/Maurano_et_al_func_var/hg19.taipale.recluster.counts); do echo ./extractFactor_short.sh $i $sample; echo ./extractFactor_long.sh $i $sample; done; done > cmds.lst
+
+mkdir plots
+
+for sample in BH01 BH01_2mer_sim IH01 IH01_2mer_sim IH02 IH02_2mer_sim CH01 CH01_2mer_sim CA01 CA01_2mer_sim; do for i in $(ls -1 short/bulk-cfDNA_2mer_sim_*.tsv | xargs -n 1 basename | sed s/"bulk-cfDNA_2mer_sim_"/''/g | sed s/'.tsv'/''/g ); do Rscript ../plot.R $sample $i; done; done
+
+for i in $(ls -1 short/BH01_2mer_sim_*.tsv | xargs -n 1 basename | sed s/"BH01_sim_"/''/g | sed s/'.tsv'/''/g ); do \
+  Rscript ../plot_subtract.R BH01 BH01_2mer_sim $i; \
+  Rscript ../plot_subtract.R IH01 IH01_2mer_sim $i; \
+  Rscript ../plot_subtract.R IH02 IH02_2mer_sim $i; \
+  Rscript ../plot_subtract.R CH01 CH01_2mer_sim $i; \
+  Rscript ../plot_subtract.R CA01 CA01_2mer_sim $i; \
+done

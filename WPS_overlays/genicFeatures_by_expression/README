@@ -1,0 +1,75 @@
+mkdir short
+mkdir long
+
+R --vanilla --quiet
+#-------------
+
+proteinAtlas <- read.table("protein_atlas/RNAtable.tsv",header=T,as.is=T,sep="\t")
+rownames(proteinAtlas) <- proteinAtlas$GeneID
+
+ndata <- proteinAtlas[,-1]
+ndata[ndata == 0] <- NA
+# at least 3 tissues with non-zero values
+ndata <- ndata[apply(ndata,1,FUN=function(x) { length(which(is.na(x))) < length(x)-2 } ),] 
+ndata[is.na(ndata)] <- 0.04
+logndata <- log2(ndata)
+dim(logndata)
+
+quantile(logndata[,"NB.4"],c(0,0.2,0.4,0.6,0.8,1))
+#         0%        20%        40%        60%        80%       100% 
+# -4.6438562 -4.6438562 -0.7369656  2.9259994  4.7495343 12.6967720
+
+length(which(logndata$NB.4 <= quantile(logndata[,"NB.4"],0.2)))
+# 4842
+length(which(logndata$NB.4 > quantile(logndata[,"NB.4"],0.2) & logndata$NB.4 <= quantile(logndata[,"NB.4"],0.4)))
+# 2999
+length(which(logndata$NB.4 > quantile(logndata[,"NB.4"],0.4) & logndata$NB.4 <= quantile(logndata[,"NB.4"],0.6)))
+# 3814
+length(which(logndata$NB.4 > quantile(logndata[,"NB.4"],0.6) & logndata$NB.4 <= quantile(logndata[,"NB.4"],0.8)))
+# 3851
+length(which(logndata$NB.4 > quantile(logndata[,"NB.4"],0.8)))
+# 3872
+
+write.table(rownames(logndata)[logndata$NB.4 <= quantile(logndata[,"NB.4"],0.2)],"bin1_ids.lst",quote=F,sep="\t",row.names=F,col.names=F)
+write.table(rownames(logndata)[logndata$NB.4 > quantile(logndata[,"NB.4"],0.2) & logndata$NB.4 <= quantile(logndata[,"NB.4"],0.4)],"bin2_ids.lst",quote=F,sep="\t",row.names=F,col.names=F)
+write.table(rownames(logndata)[logndata$NB.4 > quantile(logndata[,"NB.4"],0.4) & logndata$NB.4 <= quantile(logndata[,"NB.4"],0.6)],"bin3_ids.lst",quote=F,sep="\t",row.names=F,col.names=F)
+write.table(rownames(logndata)[logndata$NB.4 > quantile(logndata[,"NB.4"],0.6) & logndata$NB.4 <= quantile(logndata[,"NB.4"],0.8)],"bin4_ids.lst",quote=F,sep="\t",row.names=F,col.names=F)
+write.table(rownames(logndata)[logndata$NB.4 > quantile(logndata[,"NB.4"],0.8)],"bin5_ids.lst",quote=F,sep="\t",row.names=F,col.names=F)
+
+#-------------
+
+wc -l *.lst
+  4842 bin1_ids.lst
+  2999 bin2_ids.lst
+  3814 bin3_ids.lst
+  3851 bin4_ids.lst
+  3872 bin5_ids.lst
+ 19378 total
+
+for i in TSS TSE StartCodon StopCodon ExonSpliceAcceptor ExonSpliceDonor; do for j in 1 2 3 4 5; do data/Ensembl_v75/extract${i}.py --geneIDs bin${j}_ids.lst > bin${j}_${i}.coords; done & done
+
+vim extractFactor_short.sh
+#-------------------
+#!/bin/bash
+cat  bin${1}_${2}.coords | ../extractSignal.py -t sites -o short/${3}_ -n ${2}_bin${1} -i normedWPS/normedWPS_short_${3}.tsv.gz 
+#-------------------
+chmod +x extractFactor_short.sh
+
+vim extractFactor_long.sh
+#-------------------
+#!/bin/bash
+cat  bin${1}_${2}.coords | ../extractSignal.py -t sites -o long/${3}_ -n ${2}_bin${1} -i normedWPS/normedWPS_long_${3}.tsv.gz 
+#-------------------
+chmod +x extractFactor_long.sh
+
+for sample in CH01 CH01_2mer_sim; do for i in TSS TSE StartCodon StopCodon ExonSpliceAcceptor ExonSpliceDonor; do for j in 1 2 3 4 5; do echo ./extractFactor_long.sh $j $i $sample; echo ./extractFactor_short.sh $j $i $sample; done; done; done > cmds.lst
+
+############################
+
+mkdir plots
+
+for i in TSS TSE StartCodon StopCodon ExonSpliceAcceptor ExonSpliceDonor; do \
+  Rscript plot_subtract_bins.R CH01 CH01_2mer_sim $i; \
+done
+
+Rscript plot_panel_short_long_PDF.R CH01 CH01_2mer_sim
