@@ -12,7 +12,7 @@ an In Vivo Nucleosome Footprint that Informs Its Tissues-Of-Origin. Cell. 2016 J
 Primary data processing of sequencing data
 ------------------------------------------
 
-Barcoded paired-end (PE) sequencing data was split allowing up to one substitution in the barcode sequence. Fragments shorter than or equal to the read length were consensus-called and adapter-trimmed. Remaining consensus single-end reads (SR) and the individual PE reads were aligned to the human reference genome (GRCh37, 1000 Genomes phase 2 technical reference, ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/) using the ALN algorithm in BWA v0.7.10 (Li and Durbin, 2010). PE reads were further processed with BWA SAMPE to resolve ambiguous placement of read pairs or to rescue missing alignments by a more sensitive alignment step around the location of one placed read end. Aligned SR and PE data were stored in BAM format using the samtools API (Li et al., 2009). BAM files for each sample were merged across lanes and sequencing runs. BAM files for each sample were deposited in the NCBI Gene Expression Omnibus (GEO) with accession GSE71378 (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE71378).
+Barcoded paired-end (PE) sequencing data was split allowing up to one substitution in the barcode sequence. Fragments shorter than or equal to the read length were consensus-called and adapter-trimmed. Remaining consensus single-end reads (SR) and the individual PE reads were aligned to the human reference genome (GRCh37, 1000 Genomes phase 2 technical reference, ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/) using the ALN algorithm in BWA v0.7.10 (Li and Durbin, 2010). PE reads were further processed with BWA SAMPE to resolve ambiguous placement of read pairs or to rescue missing alignments by a more sensitive alignment step around the location of one placed read end. Aligned SR and PE data were stored in BAM format using the samtools API (Li et al., 2009). BAM files for each sample were merged across lanes and sequencing runs. BAM files for each sample were deposited in the NCBI Gene Expression Omnibus (GEO) with accession GSE71378 (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE71378). Note that GEO is distributing BAM files through SRA (http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP061633 and http://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP061633).
 
 Simulated reads and nucleotide frequencies
 ------------------------------------------
@@ -80,17 +80,48 @@ Peak calling is implemented in `callPeaks.py` and expects WIG on STDIN:
 bigWigToWig -chrom=chr1 -start=12000000 -end=13000000 ${SAMPLE}.bw /dev/stdout | ./callPeaks.py -s | bgzip -c > calls.bed.gz
 ```
 
-Analysis of TFBSs and genomic features
---------------------------------------
+Bed files can be converted to bigBed using the above mentioned [UCSC tools](http://hgdownload.cse.ucsc.edu/admin/exe/). We uploaded bigBed (bb) files of our nucleosome calls to GEO for [BH01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_BH01.bb), [IH01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_IH01.bb), [IH02](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_IH02.bb), [CH01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_CH01.bb), and [CA01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_CA01.bb).
 
-We started with clustered FIMO (motif-based) intervals (Grant et al., 2011; Maurano et al., 2012, http://www.uwencode.org/proj/Maurano_et_al_func_var/) defining a set of computationally predicted TFBSs (`hg19.taipale.1e-4.starch`). For a subset of clustered TFs (AP-2-2, AP-2, CTCF_Core-2, E2F-2, EBF1, Ebox-CACCTG, Ebox, ESR1, ETS, MAFK, MEF2A-2, MEF2A, MYC-MAX, PAX5-2, RUNX2, RUNX-AML, STAF-2, TCF-LEF, YY1), we retained only predicted TFBSs that overlap with ENCODE ChIP-seq peaks (TfbsClusteredV3 set downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/). Details on download and basic processing of these data sets are available in `data/Maurano_et_al_func_var/README` and `data/ENCODE_TfbsClusteredV3/README`.
+Annotation of TFBSs and genomic features
+----------------------------------------
 
-WPS values for CH01 and the corresponding simulation were extracted for each position in a 5 kb window around the start coordinate of each TFBS, and was aggregated within each TF cluster. The mean WPS of the first and last 500 bp (which is predominantly flat and represents a mean offset) of the 5 kb window was subtracted from the original WPS at each position. For L-WPS only, a sliding window mean is calculated using a 200 bp window and subtracted from the original signal. Finally, the corrected WPS profile for the simulation is subtracted from the corrected WPS profile for CH01 to correct for signal that is a product of fragment length and ligation bias. This final profile is plotted and termed the Adjusted WPS. In figures, CTCF binding sites are shifted such that the zero coordinate on the x-axis is the center of its 52 bp binding footprint (Ong and Corces, 2014). Genomic coordinates of transcription start sites, transcription end sites, start codons, and splice donor and acceptor sites were obtained from Ensembl Build version 75 (ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz, details are available in `data/Ensembl_v75/README`). Adjusted WPS surrounding these features was calculated as for TFBSs.
+We downloaded clustered FIMO (motif-based) intervals (Grant et al., 2011; Maurano et al., 2012, http://www.uwencode.org/proj/Maurano_et_al_func_var/) defining a set of computationally predicted TFBSs (`hg19.taipale.1e-4.starch`). For a subset of clustered TFs (AP-2-2, AP-2, CTCF_Core-2, E2F-2, EBF1, Ebox-CACCTG, Ebox, ESR1, ETS, MAFK, MEF2A-2, MEF2A, MYC-MAX, PAX5-2, RUNX2, RUNX-AML, STAF-2, TCF-LEF, YY1), we retained only predicted TFBSs that overlap with ENCODE ChIP-seq peaks (TfbsClusteredV3 set downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegTfbsClustered/). Details on download and basic processing of these data sets are available in `data/Maurano_et_al_func_var/README` and `data/ENCODE_TfbsClusteredV3/README`.
 
-Analysis of CTCF sites
-----------------------
+Genomic coordinates of transcription start sites, transcription end sites, start codons, and splice donor and acceptor sites were obtained from Ensembl Build version 75 (ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz, details are available in `data/Ensembl_v75/README`). 
 
-CTCF sites first included clustered FIMO binding site predictions (described above). This set was intersected with ENCODE ChIP-seq peaks (TfbsClusteredV3, described above), and then further intersected with a set of CTCF binding sites experimentally observed to be active across 19 tissues (Wang et al., 2012; details on the download of this data set are available in `data/Wang_et_al_CTCF/README`), to produce three increasingly stringent sets. For each CTCF site, distances between each of 20 flanking nucleosomes  (10 upstream and 10 downstream) were calculated. The mean S-WPS and L-WPS at each position relative to the center of the CTCF binding motif were also calculated within bins defined by spacing between -1 and +1 nucleosomes (>160 bp, 161-200 bp, 201-230 bp, 231-270 bp, 271-420 bp, 421-460 bp, and >460 bp). 
+Filtering active CTCF sites
+---------------------------
+
+CTCF sites first included clustered FIMO binding site predictions (described above). This set was intersected with ENCODE ChIP-seq peaks (TfbsClusteredV3, described above), and then further intersected with a set of CTCF binding sites experimentally observed to be active across 19 tissues (Wang et al., 2012; details on the download of this data set are available in `data/Wang_et_al_CTCF/README`), to produce three increasingly stringent sets. For each CTCF site, distances between each of 20 flanking nucleosomes  (10 upstream and 10 downstream) were calculated. 
+
+The mean S-WPS and L-WPS at each position relative to the center of the CTCF binding motifs were calculated within bins defined by spacing between -1 and +1 nucleosomes (>160 bp, 161-200 bp, 201-230 bp, 231-270 bp, 271-420 bp, 421-460 bp, and >460 bp). In figures, CTCF binding sites are shifted such that the zero coordinate on the x-axis is the center of its 52 bp binding footprint (Ong and Corces, 2014). 
+
+Overlaying WPS at aligned genomic features
+------------------------------------------
+
+WPS values for a specific data set (in most cases CH01) and the corresponding simulation were extracted for each position in a 5 kb window around the start coordinate of each TFBS, and was aggregated within each TF cluster. The mean WPS of the first and last 500 bp (which is predominantly flat and represents a mean offset) of the 5 kb window was subtracted from the original WPS at each position. For L-WPS only, a sliding window mean is calculated using a 200 bp window and subtracted from the original signal. Finally, the corrected WPS profile for the simulation is subtracted from the corrected WPS profile of the data set to correct for signal that is a product of fragment length and ligation bias. This final profile is plotted and termed the Adjusted WPS. 
+
+We provide Python and R scripts for extracting WPS overlays from block-gzip compressed WIG files (as generated by `extractReadStartsFromBAM2Wig.py` or `normalizeWPSwigs.py`). 
+
+###Motif-based TF binding site predictions
+
+We outline how S-WPS and L-WPS plots were generated from clustered FIMO (motif-based) sites in a README in `WPS_overlays/Maurano_et_al_TFclusters`.
+
+###Motif-based TF binding sites overlapped with ENCODE ChIP-seq peaks
+
+Please find a README in `WPS_overlays/Maurano_et_al_plus_ChIP` which outlines how S-WPS and L-WPS plots were generated for a subset of clustered FIMO (motif-based) sites overlapped with ENCODE ChIP-seq peaks of AP-2-2, AP-2, CTCF_Core-2, E2F-2, EBF1, Ebox-CACCTG, Ebox, ESR1, ETS, MAFK, MEF2A-2, MEF2A, MYC-MAX, PAX5-2, RUNX2, RUNX-AML, STAF-2, TCF-LEF, and YY1.
+
+###Active CTCF from ChIP-seq in 19 cell-lines
+
+`WPS_overlays/CTCF_19CellLines` has a README file which outlines how S-WPS and L-WPS plots were generated for this subset of CTCF sites.
+
+###Adjusted WPS around genic features 
+
+A README describing how the adjusted WPS was extracted and overlayed around TSS, TSE, splice acceptor/donor, and start/stop codon can be found in `WPS_overlays/genicFeatures`.
+
+###Adjusted WPS around genic features in five NB-4 expression bins
+
+The file `WPS_overlays/genicFeatures_by_expression/README` describes how adjusted WPS was extracted and overlayed around TSS, TSE, splice acceptor/donor, and start/stop codon for the five NB-4 expression bins and how the genes in each bin were defined.
 
 Analysis of DHS sites
 ---------------------
