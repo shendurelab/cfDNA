@@ -1,9 +1,6 @@
 Spacing of peaks flanking DHS sites
 ------------------------------------------
 
-Primary tissue samples were 
-
-
 DHS peaks for 349 primary tissue and cell line samples were downloaded from http://www.uwencode.org/proj/Science_Maurano_Humbert_et_al/data/all_fdr0.05_hot.tgz. Samples derived from fetal tissues (233 of 349) were removed from the analysis as they behaved inconsistently within tissue type, possibly because of unequal representation of cell types within each tissue sample. 116 DHS callsets from a variety of cell lineages were retained for analysis. 
 
 We first transformed the peak score for each DHS to percentiles within samples.  Many of the lowest scoring DHSs could in principle be filtered before downstream analysis, but in practice this did not seem to substantially affect results. 
