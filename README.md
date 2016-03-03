@@ -49,6 +49,8 @@ Analysis of nucleotide composition of 167 bp fragments
 
 Fragments with inferred lengths of exactly 167 bp were filtered within samples to remove duplicates. Dinucleotide frequencies were calculated in a strand-aware manner, using a sliding 2 bp window and reference alleles at each position, beginning 50 bp upstream of one fragment endpoint and ending 50 bp downstream of the other endpoint. Observed dinucleotide frequencies at each position were compared to expected dinucleotide frequencies determined from a set of simulated reads reflecting the same cleavage biases calculated in a library-specific manner. 
 
+See the folder `nucleotide_composition` for more details.
+
 Coverage, fragment endpoints, and windowed protection scores
 ------------------------------------------------------------
 
@@ -87,6 +89,15 @@ Analysis of DHS sites
 
 DHS peaks for 349 primary tissue and cell line samples were downloaded from http://www.uwencode.org/
 proj/Science_Maurano_Humbert_et_al/data/all_fdr0.05_hot.tgz. Samples derived from fetal tissues (233 of 349) were removed from the analysis as they behaved inconsistently within tissue type, possibly because of unequal representation of cell types within each tissue sample. 116 DHS callsets from a variety of cell lineages were retained for analysis. For the midpoint of each DHS peak in a particular set, the nearest upstream and downstream calls in the CH01 callset were identified, and the distance between the centers of those two calls was calculated. The distribution of all such distances was visualized for each DHS peak callset using a smoothed density estimate calculated for distances between 0 and 500 bp.
+
+See the folder `DHS` for more details and supporting files.  
+
+Analysis of A/B compartments
+----------------------------
+
+We downloaded A/B compartment calls with 100 kb resolution from [GSE63525](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), specifically the file `GSE63525_GM12878_subcompartments.bed.gz`. A/B segmentation calls were compared to peak spacing within equivalent 100 kb genomic windows.  In a separate analysis, peak density was compared to windowed GC content in 10 kb bins.
+
+See the folder `peak_density` for more details and supporting files.
 
 Annotation of TFBSs and genomic features
 ----------------------------------------
