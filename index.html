@@ -40,7 +40,7 @@
 an In Vivo Nucleosome Footprint that Informs Its Tissues-Of-Origin. Cell. 2016 Jan 
 14;164(1-2):57-68. doi: 10.1016/j.cell.2015.11.050. PubMed PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/26771485">26771485</a></p>
 
-<p><em>All scripts and binaries are provided as is, without any warrenty and for use at your own risk. This is not the release of a software package. We are only providing this information and code in addition to a description of methods for making it easier to reproduce are analyses. We are <strong>not</strong> providing any support for these scripts.</em> </p>
+<p><em>All scripts and binaries are provided as is, without any warrenty and for use at your own risk. This is not the release of a software package. We are only providing this information and code in addition to a description of methods for making it easier to reproduce our analyses. We are <strong>not</strong> providing any support for these scripts.</em> </p>
 
 <h2>
 <a id="primary-data-processing-of-sequencing-data" class="anchor" href="#primary-data-processing-of-sequencing-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Primary data processing of sequencing data</h2>
@@ -80,6 +80,8 @@ head -n 501 tmp_outfile_ <span class="pl-k">&gt;</span> <span class="pl-smi">${S
 
 <p>Fragments with inferred lengths of exactly 167 bp were filtered within samples to remove duplicates. Dinucleotide frequencies were calculated in a strand-aware manner, using a sliding 2 bp window and reference alleles at each position, beginning 50 bp upstream of one fragment endpoint and ending 50 bp downstream of the other endpoint. Observed dinucleotide frequencies at each position were compared to expected dinucleotide frequencies determined from a set of simulated reads reflecting the same cleavage biases calculated in a library-specific manner. </p>
 
+<p>See the folder <code>nucleotide_composition</code> for more details.</p>
+
 <h2>
 <a id="coverage-fragment-endpoints-and-windowed-protection-scores" class="anchor" href="#coverage-fragment-endpoints-and-windowed-protection-scores" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Coverage, fragment endpoints, and windowed protection scores</h2>
 
@@ -112,8 +114,16 @@ bigWigToWig -chrom=chr1 -start=12000000 -end=13000000 <span class="pl-smi">${SAM
 <h2>
 <a id="analysis-of-dhs-sites" class="anchor" href="#analysis-of-dhs-sites" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Analysis of DHS sites</h2>
 
-<p>DHS peaks for 349 primary tissue and cell line samples were downloaded from <a href="http://www.uwencode.org/">http://www.uwencode.org/</a>
-proj/Science_Maurano_Humbert_et_al/data/all_fdr0.05_hot.tgz. Samples derived from fetal tissues (233 of 349) were removed from the analysis as they behaved inconsistently within tissue type, possibly because of unequal representation of cell types within each tissue sample. 116 DHS callsets from a variety of cell lineages were retained for analysis. For the midpoint of each DHS peak in a particular set, the nearest upstream and downstream calls in the CH01 callset were identified, and the distance between the centers of those two calls was calculated. The distribution of all such distances was visualized for each DHS peak callset using a smoothed density estimate calculated for distances between 0 and 500 bp.</p>
+<p>DHS peaks for 349 primary tissue and cell line samples were downloaded from <a href="http://www.uwencode.org/proj/Science_Maurano_Humbert_et_al/data/all_fdr0.05_hot.tgz">http://www.uwencode.org/proj/Science_Maurano_Humbert_et_al/data/all_fdr0.05_hot.tgz</a>. Samples derived from fetal tissues (233 of 349) were removed from the analysis as they behaved inconsistently within tissue type, possibly because of unequal representation of cell types within each tissue sample. 116 DHS callsets from a variety of cell lineages were retained for analysis. For the midpoint of each DHS peak in a particular set, the nearest upstream and downstream calls in the CH01 callset were identified, and the distance between the centers of those two calls was calculated. The distribution of all such distances was visualized for each DHS peak callset using a smoothed density estimate calculated for distances between 0 and 500 bp.</p>
+
+<p>See the folder <code>DHS</code> for more details and supporting files.  </p>
+
+<h2>
+<a id="analysis-of-ab-compartments" class="anchor" href="#analysis-of-ab-compartments" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Analysis of A/B compartments</h2>
+
+<p>We downloaded A/B compartment calls with 100 kb resolution from <a href="http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525">GSE63525</a>, specifically the file <code>GSE63525_GM12878_subcompartments.bed.gz</code>. A/B segmentation calls were compared to peak spacing within equivalent 100 kb genomic windows.  In a separate analysis, peak density was compared to windowed GC content in 10 kb bins.</p>
+
+<p>See the folder <code>peak_density</code> for more details and supporting files.</p>
 
 <h2>
 <a id="annotation-of-tfbss-and-genomic-features" class="anchor" href="#annotation-of-tfbss-and-genomic-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Annotation of TFBSs and genomic features</h2>
