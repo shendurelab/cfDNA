@@ -1,7 +1,10 @@
+# compute peak density in 100kb bins
+
 import numpy as np
 import sys
 import gzip
 
+# min and max distances to consider
 maxdist = 280
 mindist = 120
 
@@ -17,19 +20,15 @@ fpeaks = gzip.open(sys.argv[1])
 for line in fpeaks:
     parts = line.strip().split()
     chrom = parts[0]
-    # if chrom == "chrX": continue
-    # if chrom == "chrY": continue
-    # if chrom == "X": continue
-    # if chrom == "Y": continue
     center = parts[6]
     allPeaks[chrom].append(int(center))
 
 # finished reading peaks, now compute bins
-
 lastchrom = ""
 i = 0
 
-f1 = open("/net/shendure/vol10/nobackup/shared/genomes/human_g1k_hs37d5/chrNameLength.txt")
+# length of each reference chromosome
+f1 = open("chrNameLength.txt")
 for line in f1:
 	parts = line.strip().split()
 	chrom = "chr" + parts[0]
