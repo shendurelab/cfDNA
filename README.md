@@ -66,6 +66,9 @@ Running the extraction of coverage, read starts and WPS for the long fraction:
 ./samtools view -u -m 35 -M 80 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 16 -c COVERAGE.wig.gz -n WPS.wig.gz -s STARTS.wig.gz
 ```
 
+Please note the variables `EXTREGION` and `REGION` above. When piping reads from a region, we might miss the forward read of a read pair and the provided scripts usually only extract information from the first read of a pair. Thus, `EXTREGION` should include additional bases around the region (i.e. 200bp or another value that guarantees that all read insert sizes are included; here 180bp and 80bp would be sufficient; e.g. if REGION is 1:1000-2000, EXTREGION should be 1:800-2200).
+
+
 Nucleosome peak calling
 -----------------------
 
@@ -74,13 +77,16 @@ For nuclesome peak calling, the L-WPS is locally adjusted to a running median of
 Peak calling is implemented in `callPeaks.py` and expects WIG on STDIN:
 
 ```bash
-# Note that EXTREGION should be larger than REGION (by at most the maximum read length, i.e. 180) to prevent skipping alignments
+# Note that EXTREGION should be larger than REGION (by the maximum read length, i.e. 180) to prevent skipping alignments
 ./samtools view -u -m 120 -M 180 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 120 -c OFF -s OFF | ./callPeaks.py -s > calls.bed
 
 # or from bigWig (http://hgdownload.cse.ucsc.edu/admin/exe/) and save as block-gzip compressed (http://www.htslib.org/doc/tabix.html) BED file:
 
 bigWigToWig -chrom=chr1 -start=12000000 -end=13000000 ${SAMPLE}.bw /dev/stdout | ./callPeaks.py -s | bgzip -c > calls.bed.gz
 ```
+
+Again note the variables `EXTREGION` and `REGION` above. When piping reads from a region, we might miss the forward read of a read pair and the provided scripts usually only extract information from the first read of a pair. Thus, `EXTREGION` should include additional bases around the region (i.e. 200bp or another value that guarantees that all read insert sizes are included; here 180bp would be sufficient; e.g. if REGION is 1:1000-2000, EXTREGION should be 1:800-2200).
+
 
 Bed files can be converted to bigBed using the above mentioned [UCSC tools](http://hgdownload.cse.ucsc.edu/admin/exe/). We uploaded bigBed (bb) files of our nucleosome calls to GEO for [BH01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_BH01.bb), [IH01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_IH01.bb), [IH02](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_IH02.bb), [CH01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_CH01.bb), and [CA01](ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE71nnn/GSE71378/suppl/GSE71378_CA01.bb).
 
@@ -176,3 +182,8 @@ rm -fR /tmp/body/$SAMPLE/fft
 # Correlate the intensities with the expression data and generate PDFs in R
 R --vanilla --quiet < plots.R
 ```
+
+Samtools version used
+---------------------
+
+Please note that samtools binary is included with these scripts. Among other things, this samtools binary allows filtering reads based on insert size/read length. This is an early version of the samtools branch released on https://github.com/mpieva/samtools-patched. We have not tested newer versions, but assume that they will work with our scripts too.
