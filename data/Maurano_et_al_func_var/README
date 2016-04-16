@@ -8,6 +8,7 @@ unstarch hg19.taipale.1e-4.starch | bgzip -c > hg19.taipale.bed.gz
 tabix -p bed hg19.taipale.bed.gz
 
 zcat hg19.taipale.bed.gz | ./UnifyMotifs.py | bgzip -c > hg19.taipale.recluster.bed.gz
+zcat hg19.taipale.recluster.bed.gz | cut -f 4 | sort | uniq -c > hg19.taipale.recluster.counts
 zcat hg19.taipale.bed.gz | ./UnifyMotifsGeneName.py | bgzip -c > hg19.taipale.GeneCluster.bed.gz
 
 zcat hg19.taipale.recluster.bed.gz | sort -k1,1 -k2,2n -k3,3n | bgzip -c > hg19.taipale.recluster.resort.bed.gz
