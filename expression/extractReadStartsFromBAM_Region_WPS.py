@@ -94,14 +94,14 @@ if os.path.exists(options.input):
             prefix = "chr"
             break
 
-        for read in input_file.fetch(prefix+chrom,regionStart,regionEnd):
+        for read in input_file.fetch(prefix+chrom,regionStart-protection-1,regionEnd+protection+1):
           if read.is_duplicate or read.is_qcfail or read.is_unmapped: continue
           if isSoftClipped(read.cigar): continue
           
           if read.is_paired:
             if read.mate_is_unmapped: continue
             if read.rnext != read.tid: continue
-            if read.is_read1 or (read.is_read2 and read.pnext+read.qlen < regionStart):
+            if read.is_read1 or (read.is_read2 and read.pnext+read.qlen < regionStart-protection-1):
               if read.isize == 0: continue
               if options.downsample != None and random.random() >= options.downsample: continue
               rstart = min(read.pos,read.pnext)+1 # 1-based
