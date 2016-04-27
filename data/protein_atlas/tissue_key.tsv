@@ -1,0 +1,78 @@
+#Name	Type	Description
+A-431	Skin cancer (Squamous cells)	Epidermoid carcinoma cell line
+A549	Lung carcinoma	Lung carcinoma cell line
+AN3-CA	Uterine cancer	Metastatic endometrial adenocarcinoma cell line
+BEWO	Uterine cancer	Metastatic choriocarcinoma cell line
+CACO-2	Colon adenocarcinoma	Colon adenocarcinoma cell line
+CAPAN-2	Pancreas adenocarcinoma	Pancreas adenocarcinoma cell line
+Daudi	Lymphoid: Human Burkitt lymphoma	Human Burkitt lymphoma cell line
+EFO-21	Ovarian cancer	Metastatic ovarian serous cystadenocarcinoma cell line
+HaCaT	Keratinocyte cell line	Keratinocyte cell line
+HDLM-2	Lymphoid: Hodgkin lymphoma	Hodgkin lymphoma cell line
+HEK_293	Kidney adrenal precursor cell line	Embryonal kidney cell line, transformed by adenovirus type 5
+HEL	Myeloid: Erythroleukemia	Erythroleukemia cell line (AML M6 in relapse after treatment for Hodgkin's disease)
+HeLa	Cervical cancer	Cervical epithelial adenocarcinoma cell line
+Hep_G2	Hepatocellular carcinoma	Hepatocellular carcinoma cell line
+HL-60	Myeloid: Promyelocytic leukemia	Acute promyelocytic leukemia (APL) cell line
+HMC-1	Myeloid: Mastcell leukemia	Mastcell leukemia cell line
+K-562	Myeloid: Leukemia	Chronic myeloid leukemia (CML) cell line
+Karpas-707	Lymphoid: Multiple myeloma	Multiple myeloma cell line
+MCF7	Breast cancer	Metastatic breast adenocarcinoma cell line
+MOLT-4	Lymphoid: Leukemia (ALL)	Acute lymphoblastic leukemia (T-ALL) cell line
+NB-4	Myeloid: Promyelocytic leukemia	Acute promyelocytic leukemia (APL) cell line
+NTERA-2	Urinary cancer	Metastatic embryonal carcinoma cell line, cloned from TERA-2
+PC-3	Prostate cancer	Metastatic poorly differentiated prostate adenocarcinoma cell line
+REH	Lymphoid: Leukemia (ALL)	Pre-B cell leukemia cell line (ALL, first relapse)
+RH-30	Rhabdomyosarcoma	Metastatic rhabdomyosarcoma cell line
+RPMI-8226	Lymphoid: Multiple Myeloma	Multiple myeloma cell line
+RT4	Bladder cancer	Urinary bladder transitional cell carcinoma cell line
+SCLC-21H	Small cell lung carcinoma	Small cell lung carcinoma cell line
+SH-SY5Y	Neuroblastoma	Metastatic neuroblastoma, clonal subline of neuroepithelioma cell line SK-N-SH
+SiHa	Cervical cancer	Cervical squamous cell carcinoma cell line, integrated 1-2 copies of HPV16
+SK-BR-3	Breast cancer	Metastatic breast adenocarcinoma cell line
+SK-MEL-30	Melanoma	Metastatic malignant melanoma cell line
+THP-1	Myeloid: Monocytic leukemia	Acute monocytic leukemia (AML) cell line
+TIME	Microvascular endothelial cell line	Telomerase-immortalized human microvascular endothelial cells (pooled)
+U-138_MG	Glioblastoma	Glioblastoma cell line
+U-2197	Sarcoma	Malignant fibrous histiocytoma cell line
+U-251_MG	Glioblastoma	Glioblastoma cell line
+U-266/70	Lymphoid: Multiple Myeloma	Multiple myeloma cell line (1970, IL-6-dependent)
+U-266/84	Lymphoid: Multiple Myeloma	Multiple myeloma cell line (1984, in vitro differentiated)
+U-2_OS	Osteosarcoma	Osteosarcoma cell line
+U-698	Lymphoid: B-cell lymphoma	B-cell lymphoma cell line (lymphoblastic lymphosarcoma)
+U-87_MG	Glioblastoma, astrocytoma	Glioblastoma, astrocytoma cell line
+U-937	Myeloid: Myelomonocytic histiocytic lymphoma	Myelomonocytic histiocytic lymphoma cell line
+WM-115	Melanoma	Malignant melanoma cell line
+adipose_tissue	adipose_tissue	Primary tissue
+adrenal_gland	adrenal_gland	Primary tissue
+appendix	appendix	Primary tissue
+bone_marrow	bone_marrow	Primary tissue
+cerebral_cortex	cerebral_cortex	Primary tissue
+colon	colon	Primary tissue
+duodenum	duodenum	Primary tissue
+endometrium	endometrium	Primary tissue
+esophagus	esophagus	Primary tissue
+fallopian_tube	fallopian_tube	Primary tissue
+gallbladder	gallbladder	Primary tissue
+heart_muscle	heart_muscle	Primary tissue
+kidney	kidney	Primary tissue
+liver	liver	Primary tissue
+lung	lung	Primary tissue
+lymph_node	lymph_node	Primary tissue
+ovary	ovary	Primary tissue
+pancreas	pancreas	Primary tissue
+placenta	placenta	Primary tissue
+placentaDH	placenta	Primary tissue from pooled individuals
+prostate	prostate	Primary tissue
+rectum	rectum	Primary tissue
+salivary_gland	salivary_gland	Primary tissue
+skeletal_muscle	skeletal_muscle	Primary tissue
+skin	skin	Primary tissue
+small_intestine	small_intestine	Primary tissue
+smooth_muscle	smooth_muscle	Primary tissue
+spleen	spleen	Primary tissue
+stomach	stomach	Primary tissue
+testis	testis	Primary tissue
+thyroid_gland	thyroid_gland	Primary tissue
+tonsil	tonsil	Primary tissue
+urinary_bladder	urinary_bladder	Primary tissue
