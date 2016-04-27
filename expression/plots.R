@@ -18,7 +18,7 @@ dim(logndata)
 tLabels <- read.table("labels.txt",header=T,as.is=T,sep="\t",quote="\"")
 
 fftColumns <- 29:52 # 160-222
-freq <- c("193","196","199")
+selFreq <- c("193","196","199")
 
 library(gplots)
 
