@@ -61,7 +61,8 @@ library(gplots)
 
 ##################################
 
-  fdata <- read.table(sprintf("fft_summaries/fft_%s_WPS.tsv.gz","P12.19.17_Normal"),as.is=T,sep="\t",header=T,comment.char="~")
+  # Replace BH01 with sample you are using as reference in the rank comparison
+  fdata <- read.table(sprintf("fft_summaries/fft_%s_WPS.tsv.gz","BH01"),as.is=T,sep="\t",header=T,comment.char="~")
   colnames(fdata) <- sub("X","",colnames(fdata))
   rownames(fdata) <- fdata[,1]
   fdata <- fdata[,c(1,rev(c(2:dim(fdata)[2])))]
