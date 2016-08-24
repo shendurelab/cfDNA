@@ -32,7 +32,7 @@ head -n 501 tmp_outfile_ > ${SAMPLE}_lenDist.tsv
 
 # Run simulation for each "regular" chromosome (1..22, X, Y) -- should be run in parallel
 for i in $(head -n 24 grch37_1000g_phase2/whole_genome.fa.fai | awk '{ print $1":1-"$2 }'); do \
-  ./simulate_fasta_sampling.py -v -d ${SAMPLE}_lenDist.tsv --fwdKMerGenome=grch37_regChroms_2mers.tsv --revKMerGenome=grch37_regChroms_2mers.tsv --fwdPKMers=${SAMPLE}_left_2mer_f.tsv --fwdMKMers=${SAMPLE}_left_2mer_r.tsv --revPKMers=${SAMPLE}_right_2mer_f.tsv --revMKMers=${SAMPLE}_right_2mer_r.tsv -s 20  -r \'"$i"\' -o ${SAMPLE}_2mer_sim_chr$( echo $i | cut -f 1 -d':').bam; \
+  ./simulate_reads.py -v -d ${SAMPLE}_lenDist.tsv --fwdKMerGenome=grch37_regChroms_2mers.tsv --revKMerGenome=grch37_regChroms_2mers.tsv --fwdPKMers=${SAMPLE}_left_2mer_f.tsv --fwdMKMers=${SAMPLE}_left_2mer_r.tsv --revPKMers=${SAMPLE}_right_2mer_f.tsv --revMKMers=${SAMPLE}_right_2mer_r.tsv -s 20  -r \'"$i"\' -o ${SAMPLE}_2mer_sim_chr$( echo $i | cut -f 1 -d':').bam; \
 done
 
 # Combine chromosome files, index and regenerate some stats
