@@ -56,12 +56,12 @@ Coverage, fragment endpoints, and windowed protection scores
 
 Fragment endpoint coordinates were extracted from BAM files with the SAMtools API. Both outer alignment coordinates of PE data were extracted for properly paired reads. Both end coordinates of SR alignments were extracted when PE data was collapsed to SR data by adapter trimming. A fragment’s coverage is defined as all positions between the two (inferred) fragment ends, inclusive of endpoints. We define the Windowed Protection Score (WPS) of a window of size k as the number of molecules spanning the window minus those with an endpoint within the window. We assign the determined WPS to the center of the window. For 35-80 bp fragments (short fraction, S-WPS), k=16; for 120-180 bp fragments (long fraction, L-WPS), k=120. We store coverage, read starts and WPS in gzip-compressed WIG files. We used wigToBigWig from the UCSC tools (http://hgdownload.cse.ucsc.edu/admin/exe/) for converting these to BigWig (bw) for visualization in genome viewers.
 
-Running the extraction of coverage, read starts and WPS for the short fraction:
+Running the extraction of coverage, read starts and WPS for the long fraction:
 ```bash
 ./samtools view -u -m 120 -M 180 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 120 -c COVERAGE.wig.gz -n WPS.wig.gz -s STARTS.wig.gz
 ```
 
-Running the extraction of coverage, read starts and WPS for the long fraction:
+Running the extraction of coverage, read starts and WPS for the short fraction:
 ```bash
 ./samtools view -u -m 35 -M 80 BAMFILE.bam $EXTREGION | ./FilterUniqueBAM.py -p | ./extractReadStartsFromBAM2Wig.py -p -r $REGION -w 16 -c COVERAGE.wig.gz -n WPS.wig.gz -s STARTS.wig.gz
 ```
