@@ -12,11 +12,56 @@ from optparse import OptionParser
 from collections import defaultdict 
 from sortedcontainers import SortedDict
 import random
-
-sys.path.append('/net/shendure/vol1/home/mkircher/bin/src')
-from AnalysisLib import read_genome_fastaindex,DNAiterator,get_DNA_file
-
+import mmap
+import gzip
 import pysam
+
+def read_genome_fastaindex(faifile):
+  #READ FASTA INDEX TO MEMORY
+  fastaindex = {}
+  if os.path.exists(faifile):
+    infile = open(faifile)
+    for line in infile:
+      fields = line.split()
+      if len(fields) == 5:
+        cname,length,start,line,cline = fields
+        fastaindex[cname]=int(length),int(start),int(line),int(cline)
+      else:
+        sys.stderr.write('Error: Unexpected line in fasta index file: %s\n'%(line.strip()))
+        sys.exit()
+    infile.close()
+  else:
+    sys.stderr.write('Error: Fasta index file not available: %s\n'%faifile)
+    sys.exit()
+  return fastaindex
+
+def get_DNA_file(chrom,start,end,fastafile,fastaindex):
+  try:
+    length,bstart,bline,cline = fastaindex[chrom]
+    bases = ""
+    for pos in xrange(start,end+1):
+      if pos <= length and pos >= 1:
+        hpos = pos -1
+        npos = (hpos // bline)*cline+(hpos % bline)
+        fastafile.seek(bstart+npos)
+        bases+=fastafile.read(1)
+    return bases
+  except:
+    return None
+
+def DNAiterator(chrom,start,fastamap,fastaindex):
+  try:
+    length,bstart,bline,cline = fastaindex[chrom]
+    pos = start
+    while (pos <= length and pos >= 1):
+      hpos = pos -1
+      npos = (hpos // bline)*cline+(hpos % bline)
+      fastamap.seek(bstart+npos)
+      yield fastamap.read(1)
+      pos += 1
+  except:
+    pass
+  raise StopIteration
 
 def writeBAMentry(chrom,pos,seq,length,strand):
   global BAMoutfile,rcounter
