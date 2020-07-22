@@ -1,0 +1,8 @@
+title: Fragmentation patterns of cell-free DNA
+description: Scripts for the study "Cell-free DNA Comprises an In Vivo Nucleosome Footprint that Informs Its Tissues-Of-Origin"
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-tactile
+
+gems:
+  - jekyll-mentions
