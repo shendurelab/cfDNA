@@ -202,8 +202,3 @@ rm -fR /tmp/body/$SAMPLE/fft
 # Correlate the intensities with the expression data and generate PDFs in R
 R --vanilla --quiet < plots.R
 ```
-
-Samtools version used
----------------------
-
-Please note that samtools binary is included with these scripts. Among other things, this samtools binary allows filtering reads based on insert size/read length. This is an early version of the samtools branch released on https://github.com/mpieva/samtools-patched. We have not tested newer versions, but assume that they will work with our scripts too.
