@@ -9,10 +9,30 @@ an In Vivo Nucleosome Footprint that Informs Its Tissues-Of-Origin. Cell. 2016 J
 
 *All scripts and binaries are provided as is, without any warrenty and for use at your own risk. This is not the release of a software package. We are only providing this information and code in addition to a description of methods for making it easier to reproduce our analyses. We are __not__ providing any support for these scripts.* 
 
+Versions and dependencies
+-------------------------
+
+Our scripts largely depend on Python 2, the [pysam](https://pysam.readthedocs.io/en/latest/api.html), [bx](https://pypi.org/project/bx-python/) and [numpy](https://numpy.org/) libraries. Here a list of versions that we used:
+
+```
+python/2.7.3
+numpy/1.7.0
+pysam/0.7.5
+bx-python/0.6.0
+```
+
+We were also using [R 3.1.0](https://cran.r-project.org/), [UCSC binaries](http://hgdownload.cse.ucsc.edu/admin/exe/) for working with bigWig and bigBed files and tools like tabix and samtools from [HTSlib](http://www.htslib.org/).
+
+Please consider using a software management tool like conda to install the respective packages. You can try more recent versions of the packages, but please keep in mind that Python 3 cannot be used to interpret Python 2.7 code.
+
+### Samtools version used
+
+Please note that a samtools binary is included with these scripts. Among other things, this samtools binary allows filtering reads based on insert size/read length. This is an early version of the samtools branch released on https://github.com/mpieva/samtools-patched. For samtool calls that are not filtering for read length/insert size, other (more recent) versions of samtools might be used. Please note though that parameters might be named differently and that the ASCII encoding of read filters is also special to the samtools version that we used. 
+
 Primary data processing of sequencing data
 ------------------------------------------
 
-Barcoded paired-end (PE) sequencing data was split allowing up to one substitution in the barcode sequence. Fragments shorter than or equal to the read length were consensus-called and adapter-trimmed. Remaining consensus single-end reads (SR) and the individual PE reads were aligned to the human reference genome (GRCh37, 1000 Genomes phase 2 technical reference, ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/) using the ALN algorithm in BWA v0.7.10 ([Li and Durbin, 2010](http://www.ncbi.nlm.nih.gov/pubmed/20080505)). PE reads were further processed with BWA SAMPE to resolve ambiguous placement of read pairs or to rescue missing alignments by a more sensitive alignment step around the location of one placed read end. Aligned SR and PE data were stored in BAM format using the samtools API ([Li et al., 2009](http://www.ncbi.nlm.nih.gov/pubmed/19505943)). BAM files for each sample were merged across lanes and sequencing runs. BAM files for each sample were deposited in the NCBI Gene Expression Omnibus (GEO) with accession GSE71378 (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE71378). Note that GEO is distributing BAM files through SRA (http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP061633 and http://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP061633). *Update:* SRA has recently converted the provided BAM files to SRA format. You can use the SRA tools to convert back. 
+Barcoded paired-end (PE) sequencing data was split allowing up to one substitution in the barcode sequence. Fragments shorter than or equal to the read length were consensus-called and adapter-trimmed. Remaining consensus single-end reads (SR) and the individual PE reads were aligned to the human reference genome (GRCh37, 1000 Genomes phase 2 technical reference, ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/) using the ALN algorithm in BWA v0.7.10 ([Li and Durbin, 2010](http://www.ncbi.nlm.nih.gov/pubmed/20080505)). PE reads were further processed with BWA SAMPE to resolve ambiguous placement of read pairs or to rescue missing alignments by a more sensitive alignment step around the location of one placed read end. Aligned SR and PE data were stored in BAM format using the samtools API ([Li et al., 2009](http://www.ncbi.nlm.nih.gov/pubmed/19505943)). BAM files for each sample were merged across lanes and sequencing runs. BAM files for each sample were deposited in the NCBI Gene Expression Omnibus (GEO) with accession GSE71378 (http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE71378). Note that GEO is distributing BAM files through SRA (http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?study=SRP061633 and http://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP061633). *Update:* SRA has recently converted the provided BAM files to SRA format. You can use the SRA tools to convert back. We are providing a copy of the original BAM files [here](https://kircherlab.bihealth.org/download/cfDNA/).
 
 Simulated reads and nucleotide frequencies
 ------------------------------------------
@@ -182,8 +202,3 @@ rm -fR /tmp/body/$SAMPLE/fft
 # Correlate the intensities with the expression data and generate PDFs in R
 R --vanilla --quiet < plots.R
 ```
-
-Samtools version used
----------------------
-
-Please note that samtools binary is included with these scripts. Among other things, this samtools binary allows filtering reads based on insert size/read length. This is an early version of the samtools branch released on https://github.com/mpieva/samtools-patched. We have not tested newer versions, but assume that they will work with our scripts too.
